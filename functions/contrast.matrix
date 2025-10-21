@@ -1,0 +1,90 @@
+####### 2024-06-18
+
+##### CONTRAST MATRIX FUNCTION #####
+
+####### Contrast matrix builder
+
+# V1.2 is updated so the function can deal with polymorphisms and uncertainties. It also can deal with matrices without any polymorphisms.
+# V2.3 is updated so it no longer depends on the package 'assertive' or 'assertive base' which is not available on cran anymore.
+# Polymorphisms (denoted with round brackets) and uncertainties (denoted with curly brackets) are treated the same.
+# Newest update: changes the contrast matrix into a matrix object, rather than dataframe object, so it is compatible with Phangorn package.
+
+# Dependencies: packages 'stringr'
+
+########
+
+contrast.matrix <- function(data) {
+  # Change all '-' values to '?'
+  data[data == '-'] <- '?'
+  
+  # Change all uncertainties to polymorphisms to remove curly brackets and only work with round brackets
+  data <- uncert.to.poly(data)
+  
+  scores <- row.names(table(data)) # Makes a vector of all the possible scores, including ambiguities and polymorphisms
+
+  # Subfunction to add curly brackets
+  parenthesize <- function(x){
+	return(paste0("(",x,")"))	
+  }
+
+  # Make a subfunction to extract polymorphisms from parentheses - round brackets
+  paren_extract <- function(x) {
+    # Find characters within round brackets
+    extracted <- gsub("[()]", "", x)
+    return(extracted)
+  }
+  
+  # Extract polymorphisms
+  polys <- unlist(lapply(scores, paren_extract))
+  
+  # If there are polymorphisms present:
+  if(length(polys) != 0) {
+    # Extract polymorphisms with brackets
+    polys_brackets <- unlist(lapply(polys, parenthesize))
+    
+    # Make a vector of the possible states excluding ambiguities and polymorphisms
+    states <- scores[!scores %in% c("?", polys_brackets)]
+  } else { 
+    # If no polymorphisms/uncertainties
+    states <- scores[!scores %in% c("?")] # Makes a vector of the possible states - '0', '1', '2' etc. Excludes ambiguities.
+  }
+  
+  # Make the contrast matrix template based on the dimensions of the states and scores.
+  matrix <- matrix(nrow = length(scores), ncol = length(states), dimnames = list(scores, states))
+  matrix <- as.data.frame(matrix)
+  rownames(matrix) <- scores
+  colnames(matrix) <- states
+  
+  for (i in 1:length(scores)) {
+    # Fill in the matrix for the state values
+    for (j in 1:length(states)) {
+      if (scores[i] == states[j]) {
+        matrix[i, j] <- 1
+      } else {
+        matrix[i, j] <- 0
+      }
+    }
+    
+    # Fill in the matrix for the ambiguity values
+    for (k in 1:length(scores)) {
+      if (scores[k] == "?") {
+        matrix[k,] <- 1 # This puts a '1' for every column in the ambiguity row ("?")
+      }
+      
+      if (length(polys) != 0) {
+        # Fill in the matrix for the polymorphism values
+        for (k in 1:length(polys)) {
+          poly_ind <- strsplit(polys[k], "")[[1]] # Split the polymorphism values into separate parts
+          if (scores[i] == polys_brackets[k]) {
+            for (o in 1:length(poly_ind)) {
+              matrix[polys_brackets[k], poly_ind[o]] <- 1
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  matrix <- as.matrix(matrix)
+  return(matrix)
+}
