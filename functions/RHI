@@ -1,111 +1,328 @@
-####### 2024-01-29
+####### 2025-10-21
+##### RHI: unified function supporting single-tree, per-character, and multi-tree modes
+#
+# This version merges RHI.char and RHI.multi into the parent RHI()
+# - Supports ordered characters (via ordered vector and package-local cost.matrix())
+# - Supports per-character RHI (per.char = TRUE) using Sankoff for ordered characters
+# - Supports multi-tree analysis via the trees argument (class multiPhylo or list of phylo)
+# - Preserves return values and behaviors of the original functions as closely as possible
+#
+# Usage examples:
+#  RHI(data, tree, n = 100, ordered = NULL)                # original single-tree behavior
+#  RHI(data, tree, n = 100, ordered = c(1,3), per.char=TRUE) # per-character RHI for one tree
+#  RHI(data, trees = multiPhyloObj, n = 100)               # multi-tree (distribution) RHI (prints median & CIs)
+#  RHI(data, trees = multiPhyloObj, n = 100, per.char=TRUE) # per-character RHI across trees (returns medians & CIs)
+#
+RHI <- function(data, tree = NULL, trees = NULL, n = 100, ordered = NULL, cost = NULL, per.char = FALSE){
+  # Dependencies
+  if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
+  if(!requireNamespace("ape", quietly = TRUE)) stop("ape package required.")
 
-##### RHI FUNCTION #####
+  # Ensure package-local helpers exist
+  if(!exists("get.states", mode = "function")) stop("get.states() not found — make sure Functions/get.states is sourced or the package is loaded.")
+  if(!exists("uncert.to.poly", mode = "function")) stop("uncert.to.poly() not found — make sure Functions/uncert.to.poly is sourced or the package is loaded.")
+  if(!exists("statef", mode = "function")) stop("statef() not found — make sure Functions/statef is sourced or the package is loaded.")
+  if(!exists("cost.matrix", mode = "function")) {
+    # cost is optional if user provides a cost argument directly; but cost.matrix helper is used when ordered characters are specified without explicit cost.
+    if(is.null(cost) && !is.null(ordered)) stop("cost.matrix() not found — make sure Functions/cost.matrix is sourced or the package is loaded.")
+  }
 
-# migrated from https://github.com/LizzySteell/Homoplasy/blob/main/Functions/RHI()
+  # Accept either data as a matrix/data.frame or as a phydat-like object; convert for state extraction
+  data_matrix_raw <- as.matrix(data)
+  data_matrix <- uncert.to.poly(data_matrix_raw) # handle uncertainties -> polymorphisms
 
-### V1.0: Adding code that uses the wrapper function 'morph.phydat' that prepares a phyDat object using a morphological dataset.
-###Changes uncertainties to polymorphisms, as well as gaps to ambiguities.
-###Creates a contrast matrix so that contrast is no longer a separate argument.
-###Uses the 'statef' state frequencies function.
-###Includes specifying ordered characters with a cost matrix and vector of specific ordered characters.
+  nchar <- NCOL(data_matrix)
 
-### Dependencies: packages 'phangorn', 'ape', as well as functions from this package.
+  # Normalize ordered argument: NULL, numeric indices, or character column names -> indices
+  if(!is.null(ordered)){
+    if(is.character(ordered)){
+      coln <- colnames(data_matrix_raw)
+      if(is.null(coln)) stop("data has no column names; supply ordered as numeric indices.")
+      idx <- match(ordered, coln)
+      if(any(is.na(idx))) stop("Some ordered character names not found in data column names.")
+      ordered_idx <- sort(unique(idx))
+    } else if(is.numeric(ordered)){
+      if(any(ordered < 1 | ordered > nchar)) stop("ordered indices out of range.")
+      ordered_idx <- sort(unique(as.integer(ordered)))
+    } else {
+      stop("ordered must be NULL, a numeric vector of indices, or a character vector of column names.")
+    }
+  } else {
+    ordered_idx <- integer(0)
+  }
 
-####### Calculates the Relative Homoplasy Index for a given phylogenetic dataset of discrete characters with a given topology.
+  # helper: randomize tip labels while preserving topology
+  rtips <- function(tr){
+    new_tips <- sample(tr$tip.label)
+    Rtree <- tr
+    Rtree$tip.label <- new_tips
+    return(Rtree)
+  }
 
+  # helper: compute lmin for the whole matrix (original RHI calculation)
+  compute_lmin_matrix <- function(matrix_data){
+    # matrix_data: individuals in rows, characters in columns
+    mat_t <- t(as.data.frame(matrix_data))
+    states <- get.states(mat_t)
+    f <- statef(mat_t)
+    lmin_list <- vector("numeric", length(f))
+    for(l in seq_along(f)){
+      # As in original code: ((as.numeric(states)[l+1]) * (f[l]*dim(matrix)[2]))
+      # Note: This line preserved from original implementation.
+      lmin_list[[l]] <- ((as.numeric(states)[l+1]) * (f[l] * ncol(mat_t)))
+    }
+    lmin <- sum(as.numeric(na.omit(lmin_list)))
+    return(lmin)
+  }
 
-#RHI function including ordered characters
+  # helper: compute per-character lmin (length(states)-1)
+  compute_lmin_per_char <- function(matrix_data){
+    nchar <- ncol(matrix_data)
+    lmin_chars <- integer(nchar)
+    for(k in seq_len(nchar)){
+      states_k <- get.states(matrix_data[, k, drop = FALSE])
+      lmin_chars[k] <- length(states_k) - 1
+    }
+    return(lmin_chars)
+  }
 
-RHI <- function(data, tree, n, ord=NULL, cost=NULL){ 
-	
-	### 
-	
-	#data - a morphological phydat object generated using morph.phydat().
-	#tree - a phylogenetic tree (object of class phylo)
-	#n - number of randomisations
-	#ord - a vector containing numbers for the specific ordered characters in the dataset
-	#cost - a cost matrix specifing the cost per character state change (transition)
+  # helper: build list of single-character "data" objects consistent with phangorn::parsimony input
+  build_char_list <- function(orig_data){
+    nchar <- ncol(orig_data)
+    char_list <- vector("list", nchar)
+    for(i in seq_len(nchar)){
+      char_list[[i]] <- orig_data[, i, drop = FALSE]
+    }
+    return(char_list)
+  }
 
-	#Subfunction to randomise tips and keep topology
-	rtips <- function(tree){
-		new_tips <- sample(tree$tip.label)
-		Rtree <- tree
-	Rtree$tip.label <- new_tips
-	return(Rtree)
-	}
-	#Replicates tip randomising n times and creates a list of trees
-	random_trees <- replicate(n, rtips(tree), simplify=FALSE)
-	
-	### If no ordered characters:
-	
-	if(is.null(c(ord, cost))) {
-	
-	null_tlengths <- unlist(lapply(random_trees, parsimony, data)) #Calculates the tree length for the matrix when each randomised topology is applied, and creates a vector of n parsimony scores. Note: the empirical dataset stays the same and is not altered.
-	
-	} else{
-	
-	### If ordered characters are specified:
-	
-	#calculate parsimony score for each random tree with the ordered character subset
-	null_tlengths_ord <- unlist(lapply(random_trees, parsimony, data[,ord], cost=cost))
-	
-	#calulcate parsimony score for each random tree with the unordered character subset
-	null_tlengths_no_ord <- unlist(lapply(random_trees, parsimony, data[,-ord]))
-	
-	#add together the values for each random tree
-	null_tlengths <- null_tlengths_ord + null_tlengths_no_ord 
-	
-	}
-	
-	Lnull <- quantile(null_tlengths, prob=0.5) #Calculates the median tree length for the randomised 	trees.
-	Lnull5 <- quantile(null_tlengths, prob=0.05)
-	Lnull95 <- quantile(null_tlengths, prob=0.95) 
-	
-	#Calculate frequency of each character type (i.e., number of two-state characters, number of three-state characters etc)
-	
-	matrix <- t(as.data.frame(data))
-	
-	states <- get.states(matrix)
-	 
-	#State frequencies
-	f <- statef(matrix)
+  # worker: compute per-character RHI for a single tree (copied/adapted from RHI.char)
+  compute_RHI_per_char_single_tree <- function(matrix_data, tr, n_random, ordered_idx_local){
+    # matrix_data: already processed via uncert.to.poly
+    char_list <- build_char_list(matrix_data)
+    nchar_local <- length(char_list)
 
-	#lmin is theoretical minimum tree length
-	lmin <- c()
+    # lmin per character: states - 1
+    lmin_chars <- integer(nchar_local)
+    for(k in seq_len(nchar_local)){
+      states_k <- get.states(matrix_data[, k, drop = FALSE])
+      lmin_chars[k] <- length(states_k) - 1
+    }
 
-	for(l in 1:length(f)){
-		lmin[[l]] <- ((as.numeric(states)[l+1]) * (f[l]*dim(matrix)[2]))
-	}
-	
-	#Exclude NAs in case multistate characters miss states (e.g. character that has max 9 states actually has 8 states)
-	
-	lmin <- na.omit(unlist(lmin))
-	
-	lmin <- sum(as.numeric(lmin)) #Sum each value to get the minimum number of steps for the matrix.
-	
-	#Depending on whether ordered characters are specified or not, value of L will change:
-	
-	if(is.null(ord)){
-	L <- parsimony(tree, data) #Calculates the parsimony score of the matrix with the supplied tree.
-	} else {
-		
-		L1 <- parsimony(tree, data[,ord], cost=cost)
-		L2 <- parsimony(tree, data[,-ord])
-		L = L1 + L2
-	}
-	
-	RHI_low <- (L-lmin)/(Lnull95-lmin) #Calculates the lower bound of the 95% CI.
-	RHI <- (L-lmin)/(Lnull-lmin) #Calculates the RHI for the median null tree length (Lnull).
-	RHI_high <- (L-lmin)/(Lnull5-lmin) #Calculates the RHI for the upper bound of the 95% CI
-	
-	
-	names(RHI_low) <- "5% quantile"
-	names(RHI) <- "RHI"
-	names(RHI_high) <- "95% quantile"
-	names(L) <- "Tree Length" #Prints the empirical tree length.
-	names(lmin) <- "Lmin"
-	
-	return(c(RHI_low, RHI, RHI_high, L, lmin))
+    # random trees
+    random_trees <- replicate(n_random, rtips(tr), simplify = FALSE)
+
+    # compute null distribution per character
+    null_tlengths_char <- vector("list", nchar_local)
+    for(m in seq_len(nchar_local)){
+      states_m <- get.states(matrix_data[, m, drop = FALSE])
+      nstates <- length(states_m)
+
+      if((m %in% ordered_idx_local) && nstates > 1){
+        cost_m <- if(!is.null(cost)) cost else cost.matrix(states_m)
+        null_tlengths_char[[m]] <- unlist(lapply(random_trees, function(rt){
+          phangorn::parsimony(rt, char_list[[m]], method = "sankoff", cost = cost_m)
+        }))
+      } else {
+        null_tlengths_char[[m]] <- unlist(lapply(random_trees, function(rt){
+          phangorn::parsimony(rt, char_list[[m]])
+        }))
+      }
+    }
+
+    # median Lnull per character
+    Lnull_char_med <- as.numeric(sapply(null_tlengths_char, function(x) stats::quantile(x, prob = 0.5)))
+
+    # observed lengths per character
+    char_lengths <- numeric(nchar_local)
+    for(b in seq_len(nchar_local)){
+      states_b <- get.states(matrix_data[, b, drop = FALSE])
+      nstates_b <- length(states_b)
+      if((b %in% ordered_idx_local) && nstates_b > 1){
+        cost_b <- if(!is.null(cost)) cost else cost.matrix(states_b)
+        char_lengths[b] <- phangorn::parsimony(tr, char_list[[b]], method = "sankoff", cost = cost_b)
+      } else {
+        char_lengths[b] <- phangorn::parsimony(tr, char_list[[b]])
+      }
+    }
+
+    # subtract lmin and compute RHI_char
+    char_lengths_minus_lmin <- char_lengths - lmin_chars
+    Lnull_minus_lmin <- Lnull_char_med - lmin_chars
+
+    RHI_char <- char_lengths_minus_lmin / Lnull_minus_lmin
+
+    # Handle divide-by-zero and NaN/Inf:
+    zero_denom <- (Lnull_minus_lmin == 0)
+    RHI_char[zero_denom & (char_lengths_minus_lmin == 0)] <- 0
+    RHI_char[zero_denom & (char_lengths_minus_lmin != 0)] <- NA
+    RHI_char[is.nan(RHI_char)] <- 0
+
+    # Name the vector with column names if present, else with indices
+    coln <- colnames(matrix_data)
+    if(!is.null(coln)) names(RHI_char) <- coln else names(RHI_char) <- paste0("char", seq_len(nchar_local))
+
+    return(RHI_char)
+  }
+
+  # worker: compute whole-matrix RHI for a single tree (behaves like original RHI)
+  compute_RHI_single_tree <- function(matrix_data, tr, n_random, ordered_idx_local){
+    # Build random trees
+    random_trees <- replicate(n_random, rtips(tr), simplify = FALSE)
+
+    # If ordered characters are provided, compute null distribution separating ordered/unordered or per-character sankoff as necessary
+    nchar_local <- ncol(matrix_data)
+    char_list <- build_char_list(matrix_data)
+
+    # For whole-matrix null parsimony: for each random tree compute total parsimony across characters,
+    # applying Sankoff costs to ordered characters when present.
+    null_tlengths <- unlist(lapply(random_trees, function(rt){
+      total_length <- 0
+      for(i in seq_len(nchar_local)){
+        states_i <- get.states(matrix_data[, i, drop = FALSE])
+        if((i %in% ordered_idx_local) && length(states_i) > 1){
+          cost_i <- if(!is.null(cost)) cost else cost.matrix(states_i)
+          total_length <- total_length + phangorn::parsimony(rt, char_list[[i]], method = "sankoff", cost = cost_i)
+        } else {
+          total_length <- total_length + phangorn::parsimony(rt, char_list[[i]])
+        }
+      }
+      return(total_length)
+    }))
+
+    Lnull <- stats::quantile(null_tlengths, prob = 0.5)
+    Lnull5 <- stats::quantile(null_tlengths, prob = 0.05)
+    Lnull95 <- stats::quantile(null_tlengths, prob = 0.95)
+
+    # lmin for matrix (original implementation)
+    lmin <- compute_lmin_matrix(matrix_data)
+
+    # Observed L for supplied tree:
+    if(length(ordered_idx_local) == 0){
+      # no ordered characters
+      L <- phangorn::parsimony(tr, matrix_data)
+    } else {
+      # sum ordered (Sankoff) and unordered
+      L_total <- 0
+      for(i in seq_len(nchar_local)){
+        states_i <- get.states(matrix_data[, i, drop = FALSE])
+        if((i %in% ordered_idx_local) && length(states_i) > 1){
+          cost_i <- if(!is.null(cost)) cost else cost.matrix(states_i)
+          L_total <- L_total + phangorn::parsimony(tr, char_list[[i]], method = "sankoff", cost = cost_i)
+        } else {
+          L_total <- L_total + phangorn::parsimony(tr, char_list[[i]])
+        }
+      }
+      L <- L_total
+    }
+
+    # RHI and CIs
+    RHI_low <- (L - lmin) / (Lnull95 - lmin)
+    RHI_central <- (L - lmin) / (Lnull - lmin)
+    RHI_high <- (L - lmin) / (Lnull5 - lmin)
+
+    names(RHI_low) <- "5% quantile"
+    names(RHI_central) <- "RHI"
+    names(RHI_high) <- "95% quantile"
+    names(L) <- "Tree Length"
+    names(lmin) <- "Lmin"
+
+    return(c(RHI_low, RHI_central, RHI_high, L, lmin))
+  }
+
+  # Main dispatching logic
+  # If trees provided -> multi-tree mode (preserve RHI.multi behavior)
+  if(!is.null(trees)){
+    # Validate trees
+    if(inherits(trees, "multiPhylo") || is.list(trees)){
+      n_trees <- length(trees)
+      if(n_trees < 1) stop("trees is empty.")
+    } else {
+      stop("trees must be a multiPhylo object or a list of phylo objects.")
+    }
+
+    # For each tree, compute either per-character RHI or whole-matrix RHI
+    if(per.char){
+      # compute per-character RHI for each tree and aggregate medians & quantiles by character
+      per_tree_RHIs <- lapply(trees, function(tr){
+        compute_RHI_per_char_single_tree(data_matrix, tr, n, ordered_idx)
+      })
+      # per_tree_RHIs is a list of named numeric vectors (length = nchar)
+      # Transform to matrix with rows = characters, cols = trees
+      RHImat <- do.call(cbind, per_tree_RHIs)
+      # compute median and 5%/95% quantiles per character
+      medians <- apply(RHImat, 1, function(x) stats::quantile(x, prob = 0.5, na.rm = TRUE))
+      q05 <- apply(RHImat, 1, function(x) stats::quantile(x, prob = 0.05, na.rm = TRUE))
+      q95 <- apply(RHImat, 1, function(x) stats::quantile(x, prob = 0.95, na.rm = TRUE))
+
+      result <- list(
+        per_character_median = medians,
+        per_character_5pct = q05,
+        per_character_95pct = q95,
+        per_tree_values = per_tree_RHIs
+      )
+      return(result)
+
+    } else {
+      # Whole-matrix RHI per tree
+      RHIs_per_tree <- t(sapply(trees, function(tr){
+        # compute central RHI and tree length for each tree
+        out <- compute_RHI_single_tree(data_matrix, tr, n, ordered_idx)
+        # out is a named vector c(RHI_low, RHI_central, RHI_high, L, lmin)
+        # We'll extract central RHI and tree length L for summarizing
+        return(out)
+      }))
+      # RHIs_per_tree: matrix with rows = trees, cols = elements of returned vector
+      # Extract central RHI, and Tree Length (the "Tree Length" element is named, locate by name)
+      # Locate column names
+      col_names <- colnames(RHIs_per_tree)
+      # central RHI is "RHI" column
+      if(!"RHI" %in% col_names) stop("Unexpected internal format from compute_RHI_single_tree.")
+      central_RHIs <- as.numeric(RHIs_per_tree[, "RHI"])
+      # The Tree Length may be named "Tree Length"
+      if("Tree Length" %in% col_names){
+        L_values <- as.numeric(RHIs_per_tree[, "Tree Length"])
+      } else {
+        # attempt to find numeric column representing L: it's the 4th element in the returned vector
+        L_values <- as.numeric(RHIs_per_tree[, 4])
+      }
+
+      RHIs_med <- stats::quantile(central_RHIs, prob = 0.5, na.rm = TRUE)
+      RHIs_05 <- stats::quantile(central_RHIs, prob = 0.05, na.rm = TRUE)
+      RHIs_95 <- stats::quantile(central_RHIs, prob = 0.95, na.rm = TRUE)
+      L_med <- stats::quantile(L_values, prob = 0.5, na.rm = TRUE)
+
+      names(RHIs_05) <- "5% quantile"
+      names(RHIs_med) <- "median RHI"
+      names(RHIs_95) <- "95% quantile"
+      names(L_med) <- "median Tree Length"
+
+      # Print to mimic original RHI.multi behavior
+      print(c(RHIs_05, RHIs_med, RHIs_95, L_med))
+
+      # Return a structured list including per-tree values as well
+      return(list(
+        RHI_5pct = RHIs_05,
+        RHI_median = RHIs_med,
+        RHI_95pct = RHIs_95,
+        median_tree_length = L_med,
+        per_tree_results = RHIs_per_tree
+      ))
+    }
+  }
+
+  # No trees provided -> single-tree mode. Use 'tree' argument.
+  if(is.null(tree)) stop("No tree(s) supplied. Provide either 'tree' (single phylo) or 'trees' (multiPhylo/list).")
+
+  if(per.char){
+    # compute and return per-character RHI for this single tree
+    RHI_char <- compute_RHI_per_char_single_tree(data_matrix, tree, n, ordered_idx)
+    return(RHI_char)
+  } else {
+    # compute whole-matrix RHI for this single tree (return original-format vector)
+    out_vec <- compute_RHI_single_tree(data_matrix, tree, n, ordered_idx)
+    return(out_vec)
+  }
+}
 	
 	}
