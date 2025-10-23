@@ -4,17 +4,17 @@ V1.0
 ### Binning RHI values by absolute value threshold proportion, rounding, minimum bin size, and excluded character NA handling
 # rhi.vals: named numeric vector (per-character RHI values)
 # threshold_prop: minimum proportion of total to form its own absolute-value bin (e.g., 0.1 for 10%)
-# range_breaks: numeric vector of bin boundaries for range bins (e.g. c(0, 0.1, 0.2, 0.5, 1, Inf))
+# range_breaks: numeric vector of bin boundaries for range bins (e.g. c(0, 0.1, 0.2, 0.5, 1))
 # round_digits: number of digits to round for equality grouping (default: 3)
-# min_bin_size: minimum number of characters for any bin (default: 1; bins with fewer are merged into the nearest bin)
+# min_bin_size: minimum number of characters for any bin (default: 5; bins with fewer are merged into the nearest bin)
 # excluded: integer vector of character indices to exclude (optional; 1-based positions)
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing)
 homoplasy.bin <- function(
   rhi.vals, 
-  threshold_prop = 0.1, 
+  threshold_prop = 0.05, 
   range_breaks = seq(0, 1, 0.1),
   round_digits = 3,
-  min_bin_size = 1,
+  min_bin_size = 5,
   excluded = integer(0)
 ){
   if(!is.numeric(rhi.vals)) stop("rhi.vals must be numeric.")
