@@ -1,151 +1,94 @@
-####### 2025-10-22 (revert: do NOT auto-run remove.invar; detect invariant characters including one-state+ambiguity and STOP with guidance)
-##### RHI: unified function (requires user preprocessing; authoritative invariant detection that stops and asks user to run remove.invar)
+####### 2025-10-23 (optimized, retains printing of main RHI summary values)
 #
-# V2.2
-# Behavior summary:
-# - If the user supplies a phyDat, RHI treats it as authoritative and will NOT run the curly-brace regex check.
-# - If the user supplies a raw matrix/data.frame, RHI will check for curly-brace uncertainties (e.g. "{01}")
-#   and stop with guidance to preprocess (uncert.to.poly or uncert.to.amb).
-# - RHI now performs a robust invariant-site detection (including columns that have exactly one
-#   non-'?' state plus any number of '?'s) by scanning columns as strings. If any invariant
-#   characters are detected, RHI stops and instructs the user to run remove.invar() before retrying.
-# - RHI does NOT call remove.invar() itself or remove invariant sites automatically.
+# V2.3
+
+##### RHI: unified function (optimized, robust invariant detection, prints RHI values)
 #
 RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL, per.char = FALSE){
   # Dependencies
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
   if(!requireNamespace("ape", quietly = TRUE)) stop("ape package required.")
-
-  # Required helper functions expected in Functions/
-  if(!exists("get.states", mode = "function")) stop("get.states() not found — make sure Functions/get.states is sourced or the package is loaded.")
-  if(!exists("statef", mode = "function")) stop("statef() not found — make sure Functions/statef is sourced or the package is loaded.")
+  if(!exists("get.states", mode = "function")) stop("get.states() not found.")
+  if(!exists("statef", mode = "function")) stop("statef() not found.")
   morph_phydat_available <- exists("morph.phydat", mode = "function")
-  uncert_to_amb_available <- exists("uncert.to.amb", mode = "function")
-  uncert_to_poly_available <- exists("uncert.to.poly", mode = "function")
   cost_matrix_available <- exists("cost.matrix", mode = "function")
-  # We do not require remove.invar here because RHI will instruct the user to run it if invariants are found.
+  uncert_to_poly_available <- exists("uncert.to.poly", mode = "function")
+  uncert_to_amb_available <- exists("uncert.to.amb", mode = "function")
 
-  # --- Input handling: treat phyDat specially ---
   input_is_phyDat <- inherits(data, "phyDat")
-
+  # 1. Matrix for checks
   if(input_is_phyDat){
-    # If the user supplied a phyDat, treat it as authoritative.
     data_phyDat <- data
-    # Build a taxa x characters matrix for invariant detection/cost building
-    data_matrix_check <- t(as.data.frame(data_phyDat))
+    mat <- t(as.data.frame(data_phyDat))
   } else {
-    # Coerce raw input to matrix for checks
-    data_matrix_raw <- tryCatch({
-      as.matrix(data)
-    }, error = function(e){
-      tryCatch(as.matrix(as.data.frame(data)), error = function(e2) stop("Unable to coerce 'data' to a matrix for preprocessing checks."))
-    })
-
-    # Detect curly-brace uncertainties ONLY (e.g. "{01}"). Do NOT flag round-parenthesis polymorphisms "(01)".
-    uncertainty_pattern_curly <- "\\{[^}]+\\}"
-    if(any(grepl(uncertainty_pattern_curly, data_matrix_raw, perl = TRUE))){
-      guidance <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
-      guidance <- paste0(guidance, "Please preprocess your data before calling RHI. Two common options:\n\n")
-      guidance <- paste0(guidance, "1) Convert uncertainties to polymorphisms (retain multiple possible states):\n")
-      if(uncert_to_poly_available){
-        guidance <- paste0(guidance, "   matrix2 <- uncert.to.poly(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
-      } else {
-        guidance <- paste0(guidance, "   matrix2 <- uncert.to.poly(matrix)  # ensure uncert.to.poly() is available\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
-      }
-      if(uncert_to_amb_available){
-        guidance <- paste0(guidance, "2) Convert uncertainties to ambiguities '?' (keeps round-parenthesis polymorphisms intact):\n")
-        guidance <- paste0(guidance, "   matrix2 <- uncert.to.amb(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
-      } else {
-        guidance <- paste0(guidance, "2) Optionally, convert uncertainties to ambiguities '?' using uncert.to.amb() if available in your environment (keeps polymorphisms intact).\n\n")
-      }
-      guidance <- paste0(guidance, "Choose the preprocessing that matches your intended treatment of uncertainties.")
-      stop(guidance)
+    mat <- as.matrix(data)
+    # Curly-brace uncertainty check
+    if(any(grepl("\\{[^}]+\\}", mat, perl = TRUE))){
+      msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
+      msg <- paste0(msg, "Please preprocess your data before calling RHI. Two common options:\n\n")
+      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
+      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n")
+      stop(msg)
     }
-
-    # Use the (user-supplied, preprocessed) matrix for checks
-    data_matrix_check <- data_matrix_raw
     data_phyDat <- NULL
   }
+  mat[] <- as.character(mat)
 
-  # Ensure the check-matrix is a character matrix
-  if(is.data.frame(data_matrix_check)) data_matrix_check <- as.matrix(data_matrix_check)
-  if(!is.matrix(data_matrix_check)) stop("Internal error: data could not be coerced to a matrix for invariant checks.")
-  data_matrix_check[] <- as.character(data_matrix_check)
-
-  # --- Robust invariant-site detection (string-based) ---
-  nchar_check <- ncol(data_matrix_check)
-  if(is.null(nchar_check) || nchar_check == 0){
-    stop("No characters found in the input data.")
+  # 2. Invariant detection (vectorized)
+  is_invariant <- function(col) {
+    vals <- col[!is.na(col) & col != "?"]
+    length(vals) == 0 || length(unique(vals)) == 1
   }
-
-  invariant_idxs <- integer(0)
-  for(i in seq_len(nchar_check)){
-    colvals <- data_matrix_check[, i]
-    # treat NA and '?' as ambiguity
-    nonamb <- colvals[!is.na(colvals) & colvals != "?"]
-    # If no non-ambiguous values (all '?' or NA) -> invariant
-    if(length(nonamb) == 0){
-      invariant_idxs <- c(invariant_idxs, i)
-      next
-    }
-    # If only a single distinct non-ambiguous value -> invariant (covers one-state + ambiguities)
-    if(length(unique(nonamb)) <= 1){
-      invariant_idxs <- c(invariant_idxs, i)
-    }
-  }
-  invariant_idxs <- sort(unique(invariant_idxs))
-
-  if(length(invariant_idxs) > 0){
-    # Build helpful message and stop: ask user to run remove.invar() before re-running RHI
-    if(!is.null(colnames(data_matrix_check))){
-      bad_names <- colnames(data_matrix_check)[invariant_idxs]
-      stop(sprintf("Invariant characters detected (including one-state + ambiguity). These would be removed: %s. Please remove invariant characters (e.g. using remove.invar()) before running RHI.", paste(bad_names, collapse = ", ")))
+  inv_idx <- which(apply(mat, 2, is_invariant))
+  if(length(inv_idx) > 0){
+    names <- colnames(mat)
+    if(!is.null(names)){
+      stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove.invar()) before running RHI.", paste(names[inv_idx], collapse = ", ")))
     } else {
-      stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove.invar()) before running RHI.", paste(invariant_idxs, collapse = ", ")))
+      stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove.invar()) before running RHI.", paste(inv_idx, collapse = ", ")))
     }
   }
 
-  # --- From this point, no invariant characters detected and no curly-brace uncertainties found ---
-  # Prepare phyDat for downstream analysis
+  # 3. Prepare phyDat
   if(is.null(data_phyDat)){
-    if(!morph_phydat_available) stop("data is not a phyDat object and morph.phydat() was not found. Supply a phyDat or ensure morph.phydat() is available.")
-    # build phyDat from the user-supplied (preprocessed) matrix
-    data_phyDat <- morph.phydat(data_matrix_check)
+    if(!morph_phydat_available) stop("morph.phydat() not found.")
+    data_phyDat <- morph.phydat(mat)
   }
+  nchar <- ncol(mat)
 
-  # Normalize ordered argument (names -> indices)
-  if(!is.null(ordered)){
-    if(is.character(ordered)){
-      coln <- colnames(data_matrix_check)
+  # 4. Normalize ordered argument
+  norm_ordered <- function(ord, mat){
+    if(is.null(ord)) return(integer(0))
+    if(is.character(ord)){
+      coln <- colnames(mat)
       if(is.null(coln)) stop("data has no column names; supply ordered as numeric indices.")
-      idx <- match(ordered, coln)
-      if(any(is.na(idx))) stop("Some ordered character names not found in data column names.")
-      ordered_idx <- sort(unique(idx))
-    } else if(is.numeric(ordered)){
-      if(any(ordered < 1 | ordered > nchar_check)) stop("ordered indices out of range.")
-      ordered_idx <- sort(unique(as.integer(ordered)))
+      idx <- match(ord, coln)
+      if(any(is.na(idx))) stop("Some ordered character names not found.")
+      sort(unique(idx))
+    } else if(is.numeric(ord)){
+      ord <- as.integer(ord)
+      if(any(ord < 1 | ord > ncol(mat))) stop("ordered indices out of range.")
+      sort(unique(ord))
     } else {
-      stop("ordered must be NULL, a numeric vector of indices, or a character vector of column names.")
+      stop("ordered must be NULL, numeric, or character vector.")
     }
-  } else {
-    ordered_idx <- integer(0)
   }
+  ordered_idx <- norm_ordered(ordered, mat)
 
-  # Precompute default cost matrix once from the processed data matrix if needed later
+  # 5. Precompute cost matrix
   default_cost_matrix <- NULL
   if(is.null(cost) && length(ordered_idx) > 0 && cost_matrix_available){
-    default_cost_matrix <- cost.matrix(data_matrix_check)
+    default_cost_matrix <- cost.matrix(mat)
   }
 
-  # Helper: randomize tip labels while preserving topology
+  # Helper: randomize tips
   rtips <- function(tr){
-    new_tips <- sample(tr$tip.label)
     Rtree <- tr
-    Rtree$tip.label <- new_tips
-    return(Rtree)
+    Rtree$tip.label <- sample(tr$tip.label)
+    Rtree
   }
 
-  # Compute lmin from phyDat using original algorithm (phyDat -> t(as.data.frame(phyDat)))
+  # Worker functions
   compute_lmin_matrix <- function(phyDat_obj){
     mat <- t(as.data.frame(phyDat_obj))
     states <- get.states(mat)
@@ -173,7 +116,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     for(i in seq_len(nchar_local)){
       char_list[[i]] <- tryCatch(
         phyDat_obj[, i, drop = FALSE],
-        error = function(e) stop(sprintf("Failed to subset phyDat for character %d. phangorn phyDat subsetting failed with: %s", i, e$message))
+        error = function(e) stop(sprintf("Failed to subset phyDat for character %d: %s", i, e$message))
       )
     }
     return(char_list)
@@ -182,7 +125,6 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
   compute_RHI_per_char_single_tree <- function(matrix_data, phyDat_obj, tr, n_random, ordered_idx_local){
     nchar_local <- ncol(matrix_data)
     char_phy_list <- build_char_phyDat_list(phyDat_obj, nchar_local)
-
     lmin_chars <- compute_lmin_per_char(matrix_data)
     random_trees <- replicate(n_random, rtips(tr), simplify = FALSE)
 
@@ -242,7 +184,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
         cost_used <- cost
       } else {
         if(is.null(default_cost_matrix)){
-          if(!cost_matrix_available) stop("Ordered characters requested but cost.matrix() not available and no 'cost' supplied. Please supply a cost matrix or ensure functions/cost.matrix is available.")
+          if(!cost_matrix_available) stop("Ordered characters requested but cost.matrix() not available and no 'cost' supplied.")
           default_cost_matrix <- cost.matrix(matrix_data)
         }
         cost_used <- default_cost_matrix
@@ -291,7 +233,13 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     return(c(RHI_low, RHI_central, RHI_high, L, lmin))
   }
 
-  # Main dispatch (multi-tree vs single-tree and per.char option)
+  # Main dispatch
+  trees_list_auto <- NULL
+  if( (inherits(tree, "multiPhylo") || (is.list(tree) && length(tree) > 0 && all(sapply(tree, function(x) inherits(x, "phylo"))))) ){
+    trees <- TRUE
+    trees_list_auto <- tree
+  }
+
   if(isTRUE(trees)){
     trees_list <- if(!is.null(trees_list_auto)) trees_list_auto else tree
     if(!(inherits(trees_list, "multiPhylo") || is.list(trees_list))) stop("When trees = TRUE, 'tree' must be a multiPhylo object or a list of phylo objects.")
@@ -299,7 +247,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
 
     if(per.char){
       per_tree_RHIs <- lapply(trees_list, function(tr){
-        compute_RHI_per_char_single_tree(data_matrix_check, data_phyDat, tr, n, ordered_idx)
+        compute_RHI_per_char_single_tree(mat, data_phyDat, tr, n, ordered_idx)
       })
       RHImat <- do.call(cbind, per_tree_RHIs)
       medians <- apply(RHImat, 1, function(x) stats::quantile(x, prob = 0.5, na.rm = TRUE))
@@ -312,7 +260,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
                   per_tree_values = per_tree_RHIs))
     } else {
       RHIs_per_tree <- t(sapply(trees_list, function(tr){
-        compute_RHI_single_tree(data_matrix_check, data_phyDat, tr, n, ordered_idx)
+        compute_RHI_single_tree(mat, data_phyDat, tr, n, ordered_idx)
       }, simplify = TRUE))
 
       col_names <- colnames(RHIs_per_tree)
@@ -326,21 +274,20 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
       L_med <- stats::quantile(L_values, prob = 0.5, na.rm = TRUE)
 
       names(RHIs_05) <- "5% quantile"; names(RHIs_med) <- "median RHI"; names(RHIs_95) <- "95% quantile"; names(L_med) <- "median Tree Length"
-
       print(c(RHIs_05, RHIs_med, RHIs_95, L_med))
       return(list(RHI_5pct = RHIs_05, RHI_median = RHIs_med, RHI_95pct = RHIs_95, median_tree_length = L_med, per_tree_results = RHIs_per_tree))
     }
   }
 
   # Single-tree mode
-  if(is.null(tree)) stop("No tree supplied. Provide 'tree' (a phylo), or set trees = TRUE and provide a list/multiPhylo as 'tree'.")
+  if(is.null(tree)) stop("No tree supplied. Provide 'tree' (object of class phylo), or set trees = TRUE and provide a list/multiPhylo as 'tree'.")
   if(!inherits(tree, "phylo")) stop("In single-tree mode (trees = FALSE), 'tree' must be a phylo object.")
 
   if(per.char){
-    RHI_char <- compute_RHI_per_char_single_tree(data_matrix_check, data_phyDat, tree, n, ordered_idx)
+    RHI_char <- compute_RHI_per_char_single_tree(mat, data_phyDat, tree, n, ordered_idx)
     return(RHI_char)
   } else {
-    out_vec <- compute_RHI_single_tree(data_matrix_check, data_phyDat, tree, n, ordered_idx)
+    out_vec <- compute_RHI_single_tree(mat, data_phyDat, tree, n, ordered_idx)
     return(out_vec)
   }
 }
