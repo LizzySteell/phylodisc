@@ -1,42 +1,110 @@
 ### 23-Oct-2025 homoplasy.bin function
-V0.1
+V1.0
 
-### Bin RHI values from RHI(..., per.char=TRUE) output, with excluded characters added as NA at correct positions
-# rhi.vals: numeric vector of per-character RHI values (named or unnamed)
-# bins: numeric vector of bin boundaries (e.g. c(0, 0.5, 1, 2, Inf))
+### Binning RHI values by absolute value threshold proportion, rounding, minimum bin size, and excluded character NA handling
+# rhi.vals: named numeric vector (per-character RHI values)
+# threshold_prop: minimum proportion of total to form its own absolute-value bin (e.g., 0.1 for 10%)
+# range_breaks: numeric vector of bin boundaries for range bins (e.g. c(0, 0.1, 0.2, 0.5, 1, Inf))
+# round_digits: number of digits to round for equality grouping (default: 3)
+# min_bin_size: minimum number of characters for any bin (default: 1; bins with fewer are merged into the nearest bin)
 # excluded: integer vector of character indices to exclude (optional; 1-based positions)
-# Returns: list where each element is a character vector of names (1:N) in each bin
-homoplasy.bin <- function(rhi.vals, bins = c(0, 0.5, 1, 2, Inf), excluded = integer(0)){
-  if(!is.numeric(rhi.vals)) stop("rhi.vals must be a numeric vector.")
-  if(length(bins) < 2) stop("bins must be a numeric vector of length >= 2.")
-  
-  N <- length(rhi.vals) + length(excluded)
-  all_indices <- seq_len(N)
-  
-  # Insert NA for excluded indices and shift rest
-  full_vals <- rep(NA_real_, N)
-  # Compute which indices are not excluded
+# Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing)
+homoplasy.bin <- function(
+  rhi.vals, 
+  threshold_prop = 0.1, 
+  range_breaks = seq(0, 1, 0.1),
+  round_digits = 3,
+  min_bin_size = 1,
+  excluded = integer(0)
+){
+  if(!is.numeric(rhi.vals)) stop("rhi.vals must be numeric.")
+  N <- length(rhi.vals)
+  # Exclude characters: insert NA at excluded indices and shift names
   if(length(excluded) > 0){
-    excluded <- sort(unique(as.integer(excluded)))
-    # Indices to fill with rhi.vals
-    not_excluded <- setdiff(all_indices, excluded)
+    N_full <- N + length(excluded)
+    full_vals <- rep(NA_real_, N_full)
+    not_excluded <- setdiff(seq_len(N_full), sort(unique(as.integer(excluded))))
     full_vals[not_excluded] <- rhi.vals
-  } else {
-    full_vals <- rhi.vals
+    rhi.vals <- full_vals
+    N <- N_full
   }
-  
-  # Names from 1 to N
-  names(full_vals) <- as.character(seq_len(N))
-  
-  # Binning
-  bin_labels <- paste0("(", bins[-length(bins)], ", ", bins[-1], "]")
-  binned <- cut(full_vals, breaks = bins, include.lowest = TRUE, right = TRUE, labels = bin_labels)
-  
-  # Create a list: for each bin, get names
-  result <- lapply(levels(binned), function(bl) names(full_vals)[which(binned == bl)])
-  names(result) <- bin_labels
-  # Add NA bin
-  result[["NA"]] <- names(full_vals)[which(is.na(binned))]
-  
-  return(result)
+  # Set names from 1 to N
+  names_rhi <- names(rhi.vals)
+  if(is.null(names_rhi)) names_rhi <- as.character(seq_len(N))
+
+  # ROUND values for equality grouping
+  rhi_rounded <- round(rhi.vals, digits = round_digits)
+  tab <- table(rhi_rounded, useNA = "no")
+  abs_val_bins <- names(tab)[tab >= threshold_prop * N]
+  bin_labels <- character(0)
+  bin_list <- list()
+  used <- rep(FALSE, N)
+
+  # Assign values that meet threshold to their own bin
+  for(val in abs_val_bins) {
+    idx <- which(rhi_rounded == as.numeric(val))
+    binname <- paste0("=", val)
+    bin_labels <- c(bin_labels, binname)
+    bin_list[[binname]] <- names_rhi[idx]
+    used[idx] <- TRUE
+  }
+
+  # Remaining values: bin by range
+  remaining_idx <- which(!used & !is.na(rhi.vals))
+  remaining_vals <- rhi.vals[remaining_idx]
+  remaining_names <- names_rhi[remaining_idx]
+  bin_map <- character(length(remaining_idx))
+  range_bins <- NULL
+  if(length(remaining_vals) > 0){
+    range_bins <- cut(remaining_vals, breaks = range_breaks, include.lowest = TRUE, right = FALSE)
+    bin_map <- as.character(range_bins)
+    for(lbl in levels(range_bins)){
+      idx <- which(range_bins == lbl)
+      if(length(idx) > 0){
+        bin_labels <- c(bin_labels, as.character(lbl))
+        bin_list[[as.character(lbl)]] <- remaining_names[idx]
+      }
+    }
+  }
+
+  # Add bin for NA values (excluded/missing)
+  na_idx <- which(is.na(rhi.vals))
+  if(length(na_idx) > 0){
+    bin_list[["NA"]] <- names_rhi[na_idx]
+    bin_labels <- c(bin_labels, "NA")
+  }
+
+  # Merge bins with fewer than min_bin_size characters into adjacent bin (numerically closest)
+  bin_sizes <- sapply(bin_list, length)
+  too_small <- which(bin_sizes < min_bin_size & names(bin_list) != "NA")
+  if(length(too_small) > 0 && length(bin_list) > 1){
+    bin_centers <- sapply(names(bin_list), function(lbl){
+      if(startsWith(lbl, "=")){
+        as.numeric(sub("^=", "", lbl))
+      } else if(lbl == "NA"){
+        NA_real_
+      } else {
+        nums <- as.numeric(unlist(regmatches(lbl, gregexpr("[0-9.]+", lbl))))
+        if(length(nums) == 2) mean(nums) else NA_real_
+      }
+    })
+    # For each too-small bin, reassign its characters to the nearest bin (excluding itself and NA)
+    for(idx in too_small){
+      lbl <- names(bin_list)[idx]
+      vals <- bin_list[[lbl]]
+      if(length(vals) == 0) next
+      my_center <- bin_centers[idx]
+      # Only compare to bins that aren't NA and aren't self
+      other_idx <- setdiff(which(!is.na(bin_centers)), idx)
+      dists <- abs(bin_centers[other_idx] - my_center)
+      nearest_bin <- names(bin_list)[other_idx[which.min(dists)]]
+      bin_list[[nearest_bin]] <- c(bin_list[[nearest_bin]], vals)
+      bin_list[[lbl]] <- character(0)
+    }
+    # Remove empty bins except NA
+    keep <- sapply(bin_list, length) > 0 | names(bin_list) == "NA"
+    bin_list <- bin_list[keep]
+  }
+
+  return(bin_list)
 }
