@@ -1,0 +1,42 @@
+### 23-Oct-2025 homoplasy.bin function
+V0.1
+
+### Bin RHI values from RHI(..., per.char=TRUE) output, with excluded characters added as NA at correct positions
+# rhi.vals: numeric vector of per-character RHI values (named or unnamed)
+# bins: numeric vector of bin boundaries (e.g. c(0, 0.5, 1, 2, Inf))
+# excluded: integer vector of character indices to exclude (optional; 1-based positions)
+# Returns: list where each element is a character vector of names (1:N) in each bin
+homoplasy.bin <- function(rhi.vals, bins = c(0, 0.5, 1, 2, Inf), excluded = integer(0)){
+  if(!is.numeric(rhi.vals)) stop("rhi.vals must be a numeric vector.")
+  if(length(bins) < 2) stop("bins must be a numeric vector of length >= 2.")
+  
+  N <- length(rhi.vals) + length(excluded)
+  all_indices <- seq_len(N)
+  
+  # Insert NA for excluded indices and shift rest
+  full_vals <- rep(NA_real_, N)
+  # Compute which indices are not excluded
+  if(length(excluded) > 0){
+    excluded <- sort(unique(as.integer(excluded)))
+    # Indices to fill with rhi.vals
+    not_excluded <- setdiff(all_indices, excluded)
+    full_vals[not_excluded] <- rhi.vals
+  } else {
+    full_vals <- rhi.vals
+  }
+  
+  # Names from 1 to N
+  names(full_vals) <- as.character(seq_len(N))
+  
+  # Binning
+  bin_labels <- paste0("(", bins[-length(bins)], ", ", bins[-1], "]")
+  binned <- cut(full_vals, breaks = bins, include.lowest = TRUE, right = TRUE, labels = bin_labels)
+  
+  # Create a list: for each bin, get names
+  result <- lapply(levels(binned), function(bl) names(full_vals)[which(binned == bl)])
+  names(result) <- bin_labels
+  # Add NA bin
+  result[["NA"]] <- names(full_vals)[which(is.na(binned))]
+  
+  return(result)
+}
