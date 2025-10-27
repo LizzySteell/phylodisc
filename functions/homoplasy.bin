@@ -4,7 +4,7 @@ V1.1
 ### Binning RHI values by absolute value threshold, rounding, minimum bin size, and excluded character NA handling, including plotting RHI distribution within bins and summary stats.
 
 # rhi_vals: named numeric vector (per-character RHI values generated from RHI(... per.char = TRUE)
-# abs_val_min: minimum number of characters with the same value (e.g. RHI = 0) to form its own absolute-value bin (e.g. abs_val_min = 10 means minimum of 10 characters with the same value required to form own bin)
+# abs_val_min: minimum number of characters with the same value (e.g. RHI = 0) to form its own absolute-value bin (e.g. abs_val_min = 10 means minimum of 10 characters with the same value required to form own bin). Default = 20
 # intervals: numeric vector of bin intervals for range bins (e.g. c(0, 1, 0.1) would bin RHI values every 0.1 between 0 and 1)
 # round_digits: number of digits to round (decimal places) for equality grouping (default: 3)
 # min_bin_size: minimum number of characters for any bin (default: 5; bins with fewer are merged into the nearest non-absolute bin)
@@ -13,7 +13,7 @@ V1.1
 # Combined homoplasy.bin: binning, summary stats, and boxplot
 homoplasy.bin <- function(
   rhi_vals, 
-  abs_val_min = 0.1, 
+  abs_val_min = 20, 
   intervals = seq(0, 1, 0.1),
   round_digits = 3,
   min_bin_size = 1,
@@ -31,11 +31,12 @@ homoplasy.bin <- function(
   # --- Binning logic ---
   rhi_rounded <- round(rhi_vals, digits = round_digits)
   tab <- table(rhi_rounded, useNA = "no")
-  abs_val_bins <- names(tab)[tab >= abs_val_min * N]
+  abs_val_bins <- names(tab)[tab >= abs_val_min]
   bin_labels <- character(0)
   bin_list <- list()
   used <- rep(FALSE, N)
   
+  # Assign values that meet threshold to their own abs_val bin
   for(val in abs_val_bins) {
     idx <- which(rhi_rounded == as.numeric(val))
     binname <- paste0("=", val)
@@ -44,6 +45,7 @@ homoplasy.bin <- function(
     used[idx] <- TRUE
   }
   
+  # Remaining values: bin by intervals
   remaining_idx <- which(!used & !is.na(rhi_vals))
   remaining_vals <- rhi_vals[remaining_idx]
   remaining_names <- names_rhi[remaining_idx]
@@ -71,27 +73,32 @@ homoplasy.bin <- function(
   bin_sizes <- sapply(bin_list, length)
   too_small <- which(bin_sizes < min_bin_size & names(bin_list) != "NA")
   if(length(too_small) > 0 && length(bin_list) > 1){
-    bin_centers <- sapply(names(bin_list), function(lbl){
-      if(startsWith(lbl, "=")){
-        as.numeric(sub("^=", "", lbl))
-      } else if(lbl == "NA"){
-        NA_real_
-      } else {
-        nums <- as.numeric(unlist(regmatches(lbl, gregexpr("[0-9.]+", lbl))))
-        if(length(nums) == 2) mean(nums) else NA_real_
-      }
+    # Only merge interval bins; do NOT merge abs_val bins
+    interval_bin_names <- setdiff(names(bin_list),
+                                  c(names(bin_list)[startsWith(names(bin_list), "=")], "NA"))
+    interval_bin_centers <- sapply(interval_bin_names, function(lbl){
+      nums <- as.numeric(unlist(regmatches(lbl, gregexpr("[0-9.]+", lbl))))
+      if(length(nums) == 2) mean(nums) else NA_real_
     })
     for(idx in too_small){
       lbl <- names(bin_list)[idx]
       vals <- bin_list[[lbl]]
       if(length(vals) == 0) next
-      my_center <- bin_centers[idx]
-      other_idx <- setdiff(which(!is.na(bin_centers)), idx)
-      dists <- abs(bin_centers[other_idx] - my_center)
-      nearest_bin <- names(bin_list)[other_idx[which.min(dists)]]
-      bin_list[[nearest_bin]] <- c(bin_list[[nearest_bin]], vals)
-      bin_list[[lbl]] <- character(0)
+      # Only merge if this bin is an interval bin
+      if(lbl %in% interval_bin_names){
+        # Get bin center for this interval bin
+        nums <- as.numeric(unlist(regmatches(lbl, gregexpr("[0-9.]+", lbl))))
+        my_center <- if(length(nums) == 2) mean(nums) else NA_real_
+        # Find closest other interval bin
+        other_idxs <- setdiff(seq_along(interval_bin_names), which(interval_bin_names == lbl))
+        dists <- abs(interval_bin_centers[other_idxs] - my_center)
+        nearest_bin <- interval_bin_names[other_idxs[which.min(dists)]]
+        bin_list[[nearest_bin]] <- c(bin_list[[nearest_bin]], vals)
+        bin_list[[lbl]] <- character(0)
+      }
+      # If abs_val bin is too small, leave empty (do not merge)
     }
+    # Remove empty bins except NA
     keep <- sapply(bin_list, length) > 0 | names(bin_list) == "NA"
     bin_list <- bin_list[keep]
   }
