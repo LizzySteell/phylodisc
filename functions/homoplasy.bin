@@ -1,7 +1,9 @@
 ### 27-Oct-2025 homoplasy.bin function
-V1.1
+V1.4
 
 ### Binning RHI values by absolute value threshold, rounding, minimum bin size, and excluded character NA handling, including plotting RHI distribution within bins and summary stats.
+# This version ensures correct frame shift and unique naming when 'excluded' is specified,
+# fixes plotting bug, and includes explicit comments that bins under min_bin_size are NOT merged into abs_val bins.
 
 # rhi_vals: named numeric vector (per-character RHI values generated from RHI(... per.char = TRUE)
 # abs_val_min: minimum number of characters with the same value (e.g. RHI = 0) to form its own absolute-value bin (e.g. abs_val_min = 10 means minimum of 10 characters with the same value required to form own bin). Default = 20
@@ -10,7 +12,7 @@ V1.1
 # min_bin_size: minimum number of characters for any bin (default: 5; bins with fewer are merged into the nearest non-absolute bin)
 # excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprosessing from remove.invar function. Must be reintroduced if you want accurate character lists for each partition.
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing); box plot for distributions of bins; variance statistics.
-# Combined homoplasy.bin: binning, summary stats, and boxplot
+
 homoplasy.bin <- function(
   rhi_vals, 
   abs_val_min = 20, 
@@ -20,13 +22,23 @@ homoplasy.bin <- function(
   excluded = integer(0),
   plot = TRUE
 ){
-  # --- Exclusion logic ---
+  # --- Exclusion logic with frame shift and unique naming ---
   N <- length(rhi_vals)
+  orig_names <- names(rhi_vals)
+  if(is.null(orig_names)) orig_names <- as.character(seq_len(N))
   if(length(excluded) > 0){
-    rhi_vals[excluded] <- NA_real_
+    excluded <- sort(unique(as.integer(excluded)))
+    N_full <- N + length(excluded)
+    full_vals <- rep(NA_real_, N_full)
+    not_excluded <- setdiff(seq_len(N_full), excluded)
+    full_vals[not_excluded] <- rhi_vals
+    rhi_vals <- full_vals
+    names_rhi <- as.character(seq_len(N_full))
+    N <- N_full
+  } else {
+    names_rhi <- orig_names
+    if(is.null(names_rhi)) names_rhi <- as.character(seq_len(N))
   }
-  names_rhi <- names(rhi_vals)
-  if(is.null(names_rhi)) names_rhi <- as.character(seq_len(N))
   
   # --- Binning logic ---
   rhi_rounded <- round(rhi_vals, digits = round_digits)
@@ -36,7 +48,8 @@ homoplasy.bin <- function(
   bin_list <- list()
   used <- rep(FALSE, N)
   
-  # Assign values that meet threshold to their own abs_val bin
+  # Assign values that meet threshold to their own abs_val bin.
+  # These bins will contain only values that, after rounding, are exactly equal to the bin value.
   for(val in abs_val_bins) {
     idx <- which(rhi_rounded == as.numeric(val))
     binname <- paste0("=", val)
@@ -70,6 +83,8 @@ homoplasy.bin <- function(
   }
   
   # --- Merge small bins ---
+  # Only interval bins are merged if under min_bin_size, NEVER merge small bins into abs_val bins.
+  # abs_val bins always remain strictly for their unique value.
   bin_sizes <- sapply(bin_list, length)
   too_small <- which(bin_sizes < min_bin_size & names(bin_list) != "NA")
   if(length(too_small) > 0 && length(bin_list) > 1){
@@ -84,9 +99,8 @@ homoplasy.bin <- function(
       lbl <- names(bin_list)[idx]
       vals <- bin_list[[lbl]]
       if(length(vals) == 0) next
-      # Only merge if this bin is an interval bin
+      # Merge only if this bin is an interval bin
       if(lbl %in% interval_bin_names){
-        # Get bin center for this interval bin
         nums <- as.numeric(unlist(regmatches(lbl, gregexpr("[0-9.]+", lbl))))
         my_center <- if(length(nums) == 2) mean(nums) else NA_real_
         # Find closest other interval bin
@@ -103,33 +117,57 @@ homoplasy.bin <- function(
     bin_list <- bin_list[keep]
   }
   
+  # --- Safety check: print warning if an abs_val bin contains values not matching its label ---
+  for(bn in names(bin_list)) {
+    if(startsWith(bn, "=") && length(bin_list[[bn]]) > 0) {
+      vals <- rhi_vals[as.integer(bin_list[[bn]])]
+      rounded_vals <- round(vals, round_digits)
+      lbl_val <- as.numeric(sub("^=", "", bn))
+      if(any(rounded_vals != lbl_val)) {
+        warning(sprintf("Bin %s contains non-matching values: %s", bn, paste(unique(rounded_vals), collapse=", ")))
+      }
+    }
+  }
+  
   # --- Summary statistics ---
-  stats_df <- do.call(rbind, lapply(names(bin_list), function(bn) {
-    char_ids <- bin_list[[bn]]
-    vals <- rhi_vals[char_ids]
-    vals <- vals[!is.na(vals)]
-    data.frame(
-      bin = bn,
-      variance = if(length(vals) > 1) var(vals) else 0,
-      mean = if(length(vals) > 0) mean(vals) else NA,
-      sd = if(length(vals) > 1) sd(vals) else 0,
-      n = length(vals)
-    )
-  }))
-  rownames(stats_df) <- NULL
+stats_df <- do.call(rbind, lapply(names(bin_list), function(bn) {
+  char_ids <- bin_list[[bn]]
+  vals <- rhi_vals[as.integer(char_ids)]
+  # n should count ALL char_ids, even if values are NA
+  n_chars <- length(char_ids)
+  vals_non_na <- vals[!is.na(vals)]
+  data.frame(
+    bin = bn,
+    variance = if(length(vals_non_na) > 1) var(vals_non_na) else 0,
+    mean = if(length(vals_non_na) > 0) mean(vals_non_na) else NA,
+    sd = if(length(vals_non_na) > 1) sd(vals_non_na) else 0,
+    n = n_chars
+  )
+}))
+rownames(stats_df) <- NULL
 
   # --- Boxplot ---
   if(plot) {
-    plot_list <- lapply(names(bin_list), function(bn) rhi_vals[bin_list[[bn]]])
+    plot_list <- lapply(names(bin_list), function(bn) {
+      ids <- bin_list[[bn]]
+      ids <- ids[!is.na(ids)]
+      vals <- rhi_vals[as.integer(ids)]
+      vals <- vals[!is.na(vals)]
+      vals
+    })
     names(plot_list) <- names(bin_list)
-    plot_list <- plot_list[sapply(plot_list, function(x) sum(!is.na(x)) > 0)]
-    boxplot(plot_list,
-            main="RHI Values by Homoplasy Bin",
-            xlab="Bin",
-            ylab="RHI Value",
-            las=2,
-            col="lightblue")
-    abline(h=mean(rhi_vals, na.rm=TRUE), col="red", lty=2)
+    plot_list <- plot_list[sapply(plot_list, function(x) length(x) > 0)]
+    if(length(plot_list) == 0) {
+      message("No bins with values to plot.")
+    } else {
+      boxplot(plot_list,
+              main="RHI Values by Homoplasy Bin",
+              xlab="Bin",
+              ylab="RHI Value",
+              las=2,
+              col="lightblue")
+      abline(h=mean(rhi_vals, na.rm=TRUE), col="red", lty=2)
+    }
   }
   
   return(list(
