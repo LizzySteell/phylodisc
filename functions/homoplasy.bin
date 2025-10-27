@@ -122,7 +122,7 @@ homoplasy.bin <- function(
             ylab="RHI Value",
             las=2,
             col="lightblue")
-    abline(h=mean(rhi.vals, na.rm=TRUE), col="red", lty=2)
+    abline(h=mean(rhi_vals, na.rm=TRUE), col="red", lty=2)
   }
   
   return(list(
