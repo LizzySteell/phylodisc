@@ -3,7 +3,7 @@
 V1.0 mrbayes.partition.block function
 
 #' Write MrBayes partition block from homoplasy.bin output
-#'
+#' This code is a wedding gift to my dear friend Juan Benito
 #' @param homoplasy_bins Output from homoplasy.bin()
 #' @param partition_name Name for the partition scheme (default "homoplasy")
 #' @return Character string with MrBayes partition block
