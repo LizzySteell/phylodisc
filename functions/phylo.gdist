@@ -1,13 +1,13 @@
 ### 2025-10-28
-### Gower distance matrix for phylogenetic datasets - phylo.gdist() v1
+### Gower distance matrix for phylogenetic datasets - phylo.gdist() v2.0
 ### This generates a distance matrix from discrete phylogenetic data where missing data are ignored so they are not considered in the calculations and do not skew the matrix.
-### Dependencies: package 'StatMatch'
+### StatMatch dependency in this version is no longer necessary due to need for creating custom code to obtain Gower distances.
 ### Notes:
 ### Exclude invariant characters using phylodisc::remove.invar. Gaps and ambiguities are treated the same, as missing data (encoded as NA within function).
 ###	Ordered characters are allowed and can be specified in the optional argument 'ord'. Use phylodisc::adjust.ord to generate a new vector of ordered characters if remove.invar applied to matrix.
 
 ### Working notes: polymorphisms are currently allowed but are treated as separate states, not the possibility or existence of two or more specific states.
-###					Find a way to deal with this.
+###					NEW: polymorphisms and character ordering have been dealt with but need closer scrutiny with test data.
 ###					Not ideal that NaNs are dealt with by sampling from a uniform distribution. Find probability method.
 
 #######
@@ -16,21 +16,118 @@ phylo.gdist <- function(matrix, ord=NULL){
 	
 	# Matrix - phylogenetic dataset; ord - vector of ordered characters (default = null)
 	# Make matrix into dataframe
-	df <- data.frame(matrix)
 	
+	# Helper to parse polymorphisms coded within round brackets [copilot GPT-4.1 assisted]
+	parse_states <- function(x) {
+		if (is.na(x)) return(NA)
+		s <- as.character(x)
+		if (grepl("^\\([0-9]+\\)$", s)) {
+			s <- gsub("[()]", "", s)
+		}
+		unlist(strsplit(s, ""))
+	} 
+	
+	# Custom ordered distance for polymorphisms (minimum pairwise distance) [copilot GPT-4.1 assisted]
+	ordered.poly.distance <- function(a, b, levels) {
+		if (any(is.na(a)) || any(is.na(b))) return(NA) # [copilot GPT-4.1 optimisation: use any(is.na()) for vector safety]
+		states_a <- parse_states(a)
+		states_b <- parse_states(b)
+		# Calculate all pairwise ordered distances
+		dists <- outer(states_a, states_b, Vectorize(function(x, y)
+			abs(match(x, levels) - match(y, levels))
+		))
+		return(min(dists))
+	} 
+	
+	# Custom unordered (Gower) distance for polymorphisms (minimum, i.e. 0 if any overlap in states between taxon pairs) [copilot GPT-4.1 assisted]
+	unordered.poly.distance <- function(a, b) {
+		if (any(is.na(a)) || any(is.na(b))) return(NA) # [copilot GPT-4.1 optimisation: use any(is.na()) for vector safety]
+		states_a <- parse_states(a)
+		states_b <- parse_states(b)
+		# Minimum logic: 0 if any state overlaps, else 1
+		if (length(intersect(states_a, states_b)) > 0) {
+			return(0)
+		} else {
+			return(1)
+		}
+	} 
+	
+	# Convert matrix to dataframe
+	df <- data.frame(matrix, stringsAsFactors=FALSE) # dataframe columns are treated as character not factor for unordered characters
 	#Make '?' and '-' NA so they are not counted as different states
 	df[df == "-"] <- NA
 	df[df == "?"] <- NA
 	
-	#Specify ordered characters (per column) if 'ord' is given
-		for(i in ord){
-			mode(df[,i]) <- "ordered"
+	# --- OPTIMISATION: Precompute parsed states for all cells [copilot GPT-4.1 optimisation] ---
+	n <- nrow(df)
+	p <- ncol(df)
+	parsed_states <- matrix(vector("list", n * p), nrow = n, ncol = p)
+	for (i in 1:n) {
+		for (k in 1:p) {
+			parsed_states[[i, k]] <- parse_states(df[i, k])
 		}
-		
-	# Calculate gower distances of the matrix	
-	dist <- gower.dist(df)
+	}
 	
-	row.names(dist) <- row.names(df) #Put taxon names into the distance matrix
+	# For each ordered column, identify levels and precompute state indices [copilot GPT-4.1 optimisation]
+	ordered_levels_list <- list()
+	parsed_indices <- matrix(vector("list", n * p), nrow = n, ncol = p)
+	if (!is.null(ord)) {
+		for (i in ord) {
+			levels <- get.states(df[, i]) # use phylodisc function get.states
+			ordered_levels_list[[as.character(i)]] <- levels
+			# Precompute indices for all cells in ordered columns
+			for (row in 1:n) {
+				states <- parsed_states[[row, i]]
+				if (any(is.na(states))) {
+					parsed_indices[[row, i]] <- NA
+				} else {
+					parsed_indices[[row, i]] <- match(states, levels)
+				}
+			}
+		}
+	}
+	
+	dist <- matrix(NA, n, n)
+	rownames(dist) <- rownames(df) #Put taxon names into the distance matrix
+	colnames(dist) <- rownames(df)
+	
+	# Calculate pairwise distances [copilot GPT-4.1 optimised: uses precomputed parsed_states and parsed_indices]
+	for (i in 1:n) {
+		for (j in i:n) {
+			total <- 0
+			n_valid <- 0
+			for (k in 1:p) {
+				# Ordered columns use ordered logic
+				if (!is.null(ord) && k %in% ord) {
+					levels <- ordered_levels_list[[as.character(k)]]
+					a_idx <- parsed_indices[[i, k]]
+					b_idx <- parsed_indices[[j, k]]
+					if (any(is.na(a_idx)) || any(is.na(b_idx))) {
+						d <- NA
+					} else {
+						# Use indices for faster distance calculation
+						dists <- abs(outer(a_idx, b_idx, "-"))
+						d <- min(dists)
+						if (length(levels) > 1) d <- d / (length(levels) - 1)
+					}
+				} else {
+					a <- parsed_states[[i, k]]
+					b <- parsed_states[[j, k]]
+					d <- unordered.poly.distance(a, b)
+				}
+				if (!is.na(d)) {
+					total <- total + d
+					n_valid <- n_valid + 1
+				}
+			}
+			# Normalize by number of valid comparisons
+			if (n_valid > 0) {
+				dist[i, j] <- dist[j, i] <- total / n_valid
+			} else {
+				dist[i, j] <- dist[j, i] <- NaN
+			}
+		}
+	}
 	
 	# If there are NaN taxon pairs (because they share no characters), then sample randomly from uniform distribution
 	dist[is.nan(dist)] <- runif(sum(is.nan(dist)), min=0, max=1)
