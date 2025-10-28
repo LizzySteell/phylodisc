@@ -31,3 +31,7 @@ mrbayes.partition.block <- function(homoplasy_bins, partition_name = "homoplasy"
   block <- c(charset_lines, partition_line, set_line)
   cat(paste(block, collapse = "\n"))
 }
+
+# This function was written using the GitHub copilot LLM GPT-4.1 (created 27-Oct-2025).
+# The prompt was to 'write a function that creates a MrBayes partition block from the output from phylodisc::homoplasy.bin()', and a sample partition block was copy pasted into the prompt.
+# The function was then edited manually to ensure the output code was concatenated.
