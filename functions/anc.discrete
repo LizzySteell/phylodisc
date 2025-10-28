@@ -1,17 +1,20 @@
-### 2024-Aug-14
+### 2025-Oct-28
 
 ### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses ace() from the 'ape' package.
-### Maximum likelihood is only option for estimating ancestral states for discrete characters. However, model can be specified as either equal rates "ER" or 
-### all rates different "ARD". Marginal likelihood estimation can be selected if marginal = TRUE.
-### IMPORTANT: currently "ARD" is not working, function needs editing and experimenting with.
+### Maximum likelihood is only option for estimating ancestral states for discrete characters. Currently, only an equal rates model of character state evolution is available for this function.
+### This function opts for marginal likelihood = FALSE, which has been pointed out by L. Revell that it actually generates marginal likelihood scores (see https://blog.phytools.org/2015/05/about-how-acemarginaltrue-does-not.html)
+### A major drawback for this function is how polymorphic character scorings are treated. The ace function does not deal with polymorphic states. It can deal with missing data (encoded as NA).
+### Here, polymorphisms are converted to ambiguities and all amgiguities (and gap scores) are treated as missing data (NA).
+### This could be improved in the future by a new custom function that works with the phangorn PhyDat object, where polymorphisms are encoded using a contrast matrix.
+### Another caveat is that ordered characters are ignored.
 
 # Arguments:
 # matrix - discrete character matrix
 # tree - phylogenetic tree of the class 'phylo'. Has to be fully bifurcating.
-# model - either "ER" or "ARD"
-# marginal - whether marginal likelihood should be estimated. See details of ace() in 'ape' for details on arguments.
+# model - current only option for working code is equal rates "ER"
+# marginal - whether marginal likelihood should be estimated - currenlty set to FALSE, which inadvertently uses the entire tree to estimate likelihoods and gives marginal likelihood scores. See details of ace() in 'ape' for arguments.
 
-anc.discrete <- function(matrix, tree, model=model, marginal=FALSE){
+anc.discrete <- function(matrix, tree, model="ER", marginal=FALSE){
 
 # Matrix needs to have no polymophisms or uncertainties, and ambiguities need to be specified as NA
 
@@ -21,12 +24,12 @@ matrix[matrix == "?"] <- NA
 
 # Subfunction to reconstruct ancestral state for each character.
 
-anc.discrete.char <- function(char, tree, model=model, marginal=FALSE){
+anc.discrete.char <- function(char, tree, model="ER", marginal=FALSE){
 	
 	char <- as.factor(char)
 	
 	# Anc state reconstruction for one character in the matrix
-	anc <- ace(char, tree, type="discrete", method="ML", model=model, marginal=FALSE)
+	anc <- ace(char, tree, type="discrete", method="ML", model="ER", marginal=FALSE)
 	
 	liks <- anc$lik.anc
 	
@@ -46,7 +49,7 @@ return(anc_nodes)
 nodes <- c()
 for(j in 1:dim(matrix)[2]){
 	
-	nodes[[j]] <- anc.discrete.char(matrix[,j], tree, model=model, marginal=FALSE)
+	nodes[[j]] <- anc.discrete.char(matrix[,j], tree, model="ER", marginal=FALSE)
 	
 }
 anc_states <- matrix(unlist(nodes), ncol=length(nodes), byrow=FALSE)
