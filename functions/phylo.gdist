@@ -1,14 +1,18 @@
-### 2023-11-07
+### 2025-10-28
 ### Gower distance matrix for phylogenetic datasets - phylo.gdist() v1
-### This generates a distance matrix from phylogenetic data where missing data are ignored so they are not considered in the calculations and do not skew the matrix.
+### This generates a distance matrix from discrete phylogenetic data where missing data are ignored so they are not considered in the calculations and do not skew the matrix.
 ### Dependencies: package 'StatMatch'
+### Notes:
+### Exclude invariant characters using phylodisc::remove.invar. Gaps and ambiguities are treated the same, as missing data (encoded as NA within function).
+###	Ordered characters are allowed and can be specified in the optional argument 'ord'. Use phylodisc::adjust.ord to generate a new vector of ordered characters if remove.invar applied to matrix.
+
+### Working notes: polymorphisms are currently allowed but are treated as separate states, not the possibility or existence of two or more specific states.
+###					Find a way to deal with this.
+###					Not ideal that NaNs are dealt with by sampling from a uniform distribution. Find probability method.
 
 #######
 
 phylo.gdist <- function(matrix, ord=NULL){
-	
-	set.seed(13) # This is so you can check if a matrix with ordered characters or unordered characters has a different distance matrix.
-               # You can check this after you've done phylo.dist() by doing sum() on each distance matrix.
 	
 	# Matrix - phylogenetic dataset; ord - vector of ordered characters (default = null)
 	# Make matrix into dataframe
