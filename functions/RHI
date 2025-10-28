@@ -291,3 +291,9 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     return(out_vec)
   }
 }
+
+# This function contains parts written by the GitHub copilot LLM GPT-4.1.
+# The original function was written by E. Steell and the old version remains in the repository Homoplasy (https://github.com/LizzySteell/Homoplasy)
+# The new version merges three original functions from the Homoplasy reposity (RHI, RHI.char, RHI.multi) and the author fixed bugs with the original RHI.char function that was not correctly calculating RHI.
+# The author used copilot in troubleshooting and optimisation, and also to add warnings and error messages.
+# Results from the same dataset with set.seed were compared between the old and new versions of the function to ensure the new version was calculating RHI values correctly in all scenarios.
