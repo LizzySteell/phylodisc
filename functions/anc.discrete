@@ -1,12 +1,12 @@
 ### 2025-Oct-29
 
-### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses ace() from the 'ape' package.
-### Maximum likelihood is only option for estimating ancestral states for discrete characters. Currently, only an equal rates model of character state evolution is available for this function.
-### This function opts for marginal likelihood = FALSE, which has been pointed out by L. Revell that it actually generates marginal likelihood scores (see https://blog.phytools.org/2015/05/about-how-acemarginaltrue-does-not.html)
-### A major drawback for this function is how polymorphic character scorings are treated. The ace function does not deal with polymorphic states. It can deal with missing data (encoded as NA).
-### Here, polymorphisms are converted to ambiguities and all amgiguities (and gap scores) are treated as missing data (NA).
-### This could be improved in the future by a new custom function that works with the phangorn PhyDat object, where polymorphisms are encoded using a contrast matrix.
-### Another caveat is that ordered characters are ignored.
+### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses corHMM from the corHMM package.
+### Uses Maximum likelihood to estimate ancestral states for nodes in a fully bifurcating phylogeny with branch-lengths (zero-length branches not allowed).
+### This function calculates marginal likelihoods for characters, and the most likely state is selected based on the highest marginal scaled likelihood within each character (state likelihood).
+### 
+### FIXED: Now deals with polymorphisms and treats ambiguities as all possible states. Better because it includes more information from the dataset in the ancestral reconstruction.
+### ER and SYM models supported, ARD model not advisable due to processing times and crashing. In most cases, ER produces best AICc scores for phylogenetic characters (from experimenting).
+### IN PROGRESS: dealing with character ordering via specific rate index matrices 
 
 #### WORK IN PROGRESS
 
