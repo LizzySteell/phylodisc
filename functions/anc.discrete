@@ -1,4 +1,4 @@
-### 2025-Oct-28
+### 2025-Oct-29
 
 ### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses ace() from the 'ape' package.
 ### Maximum likelihood is only option for estimating ancestral states for discrete characters. Currently, only an equal rates model of character state evolution is available for this function.
@@ -8,50 +8,82 @@
 ### This could be improved in the future by a new custom function that works with the phangorn PhyDat object, where polymorphisms are encoded using a contrast matrix.
 ### Another caveat is that ordered characters are ignored.
 
-# Arguments:
-# matrix - discrete character matrix
-# tree - phylogenetic tree of the class 'phylo'. Has to be fully bifurcating.
-# model - current only option for working code is equal rates "ER"
-# marginal - whether marginal likelihood should be estimated - currenlty set to FALSE, which inadvertently uses the entire tree to estimate likelihoods and gives marginal likelihood scores. See details of ace() in 'ape' for arguments.
+#### WORK IN PROGRESS
 
-anc.discrete <- function(matrix, tree, model="ER", marginal=FALSE){
+anc.discrete <- function(matrix, tree, model="ER"){
+	
+	# Dependencies
+  if(!requireNamespace("corHMM", quietly = TRUE)) stop("corHMM package required.")
+  if(!exists("get.states", mode = "function")) stop("get.states() not found.")
+  if(!exists("rate.matrix", mode = "function")) stop("rate.matrix() not found.")
 
-# Matrix needs to have no polymophisms or uncertainties, and ambiguities need to be specified as NA
+# Tell user to convert all uncertainties to polymorphisms or ambiguities in preprocessing.
+# Tell user to convert all gaps to ambiguities in preprocessing.
+# Curly-brace uncertainty check
+    if(any(grepl("\\{[^}]+\\}", mat, perl = TRUE))){
+      msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
+      msg <- paste0(msg, "Please preprocess your data before calling anc.discrete. Two common options:\n\n")
+      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n\n\n")
+      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n\n")
+      stop(msg)
+    }
 
-matrix <- poly.to.amb(matrix)
+# Gaps are treated as ambiguities.
 matrix[matrix == "-"] <- "?"
-matrix[matrix == "?"] <- NA
+
 
 # Subfunction to reconstruct ancestral state for each character.
 
-anc.discrete.char <- function(char, tree, model="ER", marginal=FALSE){
+anc.discrete.char <- function(tree, char, model){
 	
-	char <- as.factor(char)
+	# Anc state reconstruction for one character in the matrix using corHMM
+	anc <- corHMM(tree, char, model=model, rate.cat=1)
 	
-	# Anc state reconstruction for one character in the matrix
-	anc <- ace(char, tree, type="discrete", method="ML", model="ER", marginal=FALSE)
-	
-	liks <- anc$lik.anc
+	liks <- anc$states
 	
 	anc_nodes <- cbind(liks, c(seq(1:dim(liks)[1])))
 anc_nodes <- anc_nodes[,-c(1:dim(liks)[2])]
 
 # Select the character state with the highest probability for each node (ancestor).
 for(i in 1:length(anc_nodes)){
-	anc_nodes[[i]] <- as.numeric(names(which.max(liks[i,])))
+	anc_nodes[[i]] <- as.numeric(which.max(liks[i,]))
 }
 
 return(anc_nodes)
 
 }
 
+# Make a list of dataframes that contain one character each
+
+char_dfs <- list()
+
+for (i in seq_len(ncol(matrix))) {
+  df <- data.frame(
+    name = rownames(matrix),
+    matrix[, i],
+    stringsAsFactors = FALSE
+  )
+  # Remove the column name for the second column
+  colnames(df)[2] <- ""
+  char_dfs[[i]] <- df
+}
+
+# Print the first data frame for character column 1
+print(char_dfs[[1]])
+
 # Reconstruct ancestral states for every character in the matrix.
 nodes <- c()
+chars <- c()
+
+for(a in 1:dim(matrix)[2]){
+	chars[a] <- mat_new[,1:a]
+	chars[a] <- as.data.frame(chars[a], row.names=1)
+
 for(j in 1:dim(matrix)[2]){
 	
-	nodes[[j]] <- anc.discrete.char(matrix[,j], tree, model="ER", marginal=FALSE)
+	nodes[[j]] <- anc.discrete.char(tree, chars[j], model=model)
 	
-}
+}}
 anc_states <- matrix(unlist(nodes), ncol=length(nodes), byrow=FALSE)
 row.names(anc_states) <- as.character(c(1:(length(tree$tip.label)-1)+length(tree$tip.label)))
 
@@ -60,3 +92,4 @@ row.names(anc_states) <- as.character(c(1:(length(tree$tip.label)-1)+length(tree
 return(anc_states)
 
 }
+
