@@ -27,14 +27,37 @@ anc.discrete <- function(matrix, tree, model="ER"){
       msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n\n")
       stop(msg)
     }
+     # Invariant detection (vectorized)
+  is_invariant <- function(col) {
+    vals <- col[!is.na(col) & col != "?"]
+    length(vals) == 0 || length(unique(vals)) == 1
+  }
+  inv_idx <- which(apply(matrix, 2, is_invariant))
+  if(length(inv_idx) > 0){
+    names <- colnames(matrix)
+    if(!is.null(names)){
+      stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(names[inv_idx], collapse = ", ")))
+    } else {
+      stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(inv_idx, collapse = ", ")))
+    }
+  }
 
 # Gaps are treated as ambiguities.
 matrix[matrix == "-"] <- "?"
 
+# Polymorphisms need to be encoded differently to be read properly by corHMM
+
+replace_poly <- function(x) {
+  # Replace patterns like "(01)", "(23)", etc. with "0&1", "2&3", etc.
+  gsub("\\((\\d)(\\d)\\)", "\\1&\\2", x)
+}
+
+mat_new <- replace_poly(matrix)
+
 
 # Subfunction to reconstruct ancestral state for each character.
 
-anc.discrete.char <- function(tree, char, model){
+anc.discrete.char <- function(char, tree, model){
 	
 	# Anc state reconstruction for one character in the matrix using corHMM
 	anc <- corHMM(tree, char, model=model, rate.cat=1)
@@ -57,33 +80,31 @@ return(anc_nodes)
 
 char_dfs <- list()
 
-for (i in seq_len(ncol(matrix))) {
+for (i in seq_len(ncol(mat_new))) {
+  # Combine rownames and character column, with sequential row names
   df <- data.frame(
-    name = rownames(matrix),
-    matrix[, i],
+    V1 = rownames(mat_new),
+    V2 = mat_new[, i],
     stringsAsFactors = FALSE
   )
-  # Remove the column name for the second column
-  colnames(df)[2] <- ""
+  rownames(df) <- seq_len(nrow(df))
   char_dfs[[i]] <- df
 }
 
-# Print the first data frame for character column 1
-print(char_dfs[[1]])
-
 # Reconstruct ancestral states for every character in the matrix.
-nodes <- c()
-chars <- c()
-
-for(a in 1:dim(matrix)[2]){
-	chars[a] <- mat_new[,1:a]
-	chars[a] <- as.data.frame(chars[a], row.names=1)
-
-for(j in 1:dim(matrix)[2]){
 	
-	nodes[[j]] <- anc.discrete.char(tree, chars[j], model=model)
+	nodes <- lapply(char_dfs, anc.discrete.char, tree, model=model)
 	
-}}
+	#troubleshooting
+#	hmms <- list()
+	# is corHMM working yes but lappy stops due to error, let's do forloop
+#	for (i in 1:length(char_dfs)){
+		
+#	hmms[[i]] <- corHMM(tree, char_dfs[[i]], rate.cat=1, model="ER")
+#	print(i)
+#	}
+
+# Select most likely state for each node based on the marginal scaled likelihoods for each state in each character.
 anc_states <- matrix(unlist(nodes), ncol=length(nodes), byrow=FALSE)
 row.names(anc_states) <- as.character(c(1:(length(tree$tip.label)-1)+length(tree$tip.label)))
 
@@ -92,4 +113,3 @@ row.names(anc_states) <- as.character(c(1:(length(tree$tip.label)-1)+length(tree
 return(anc_states)
 
 }
-
