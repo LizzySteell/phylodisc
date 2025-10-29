@@ -6,7 +6,7 @@
 ### Notes: This function is intended to create rate matrices that specify the nature of character state transitions in an ordered multistate character.
 ###        The ER option constrains transitions between adjacent states to the same rate for all states, and transitions between non-adjacent states are not allowed.
 ###        The SYM option allows different but symmetrical rates between different pairs of adjacent states.
-###        The output is a list with $states (renumbered to follow formatting of corHMM) and $rate.mat which gives the transition matrix
+###        The output is matrix with rows and columns representing states (renumbered to follow formatting of corHMM).
 ###        This matrix does NOT contain or estimate the actual rate of change between character states within a character. It just specifies what is allowed in downstream calls (i.e., indicates what parameters are to be estimated in the corHMM analysis).
 
 rate.matrix <- function(char, model="ER"){
@@ -40,8 +40,7 @@ make.trans.matrix <- function(n, model) {
   mat
 }
 
-mat <- make.trans.matrix(n, model)
-rate_matrix <- list(legend = states, rate.mat = mat)
+rate_matrix <- make.trans.matrix(n, model)
 return(rate_matrix)
 }
 
