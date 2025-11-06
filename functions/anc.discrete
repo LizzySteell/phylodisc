@@ -50,9 +50,32 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 
 	# Polymorphisms need to be encoded differently to be read properly by corHMM
 	replace_poly <- function(x) {
-		# Replace patterns like "(01)", "(23)", etc. with "0&1", "2&3", etc.
-		gsub("\\((\\d)(\\d)\\)", "\\1&\\2", x)
-	}
+  poly_replacer <- function(s) {
+    s <- as.character(s)[1]
+    # Find all ("(<digits>)") in s
+    m <- gregexpr("\\((\\d+)\\)", s, perl = TRUE)
+    matches <- regmatches(s, m)[[1]]
+    if (length(matches) == 0) return(s)
+
+    replaced <- s
+    for (match in matches) {
+      digits <- unlist(strsplit(sub("^\\((\\d+)\\)$", "\\1", match), ""))
+      replacement <- paste(digits, collapse = "&")
+      replaced <- sub(match, replacement, replaced, fixed = TRUE)
+    }
+    replaced
+  }
+  if (is.matrix(x)) {
+    result <- matrix(
+      vapply(as.character(x), poly_replacer, character(1)),
+      nrow = nrow(x), ncol = ncol(x),
+      dimnames = dimnames(x)
+    )
+    return(result)
+  } else {
+    vapply(as.character(x), poly_replacer, character(1))
+  }
+}
 	mat_new <- replace_poly(matrix)
 
 	# Subfunction to reconstruct ancestral state for each character.
