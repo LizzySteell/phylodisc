@@ -48,7 +48,8 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	# Gaps are treated as ambiguities.
 	matrix[matrix == "-"] <- "?"
 
-	# Polymorphisms need to be encoded differently to be read properly by corHMM
+	# Polymorphisms need to be encoded differently to be read properly by corHMM (e.g. (01) -> 0&1).
+# Note: this block of code excludes the use of 'gsub' because there were errors.
 	replace_poly <- function(x) {
   poly_replacer <- function(s) {
     s <- as.character(s)[1]
@@ -56,7 +57,6 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
     m <- gregexpr("\\((\\d+)\\)", s, perl = TRUE)
     matches <- regmatches(s, m)[[1]]
     if (length(matches) == 0) return(s)
-
     replaced <- s
     for (match in matches) {
       digits <- unlist(strsplit(sub("^\\((\\d+)\\)$", "\\1", match), ""))
