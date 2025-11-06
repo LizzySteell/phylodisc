@@ -1,131 +1,59 @@
-### 2025-Oct-30 V2.1
+### 2024-Aug-14
 
-### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses corHMM from the corHMM package.
-### Uses Maximum likelihood to estimate ancestral states for nodes in a fully bifurcating phylogeny with branch-lengths (zero-length branches not allowed).
-### This function calculates marginal likelihoods for characters, and the most likely state is selected based on the highest marginal scaled likelihood within each character (state likelihood).
-### 
-### FIXED: Now deals with polymorphisms and treats ambiguities as all possible states. Better because it includes more information from the dataset in the ancestral reconstruction.
-### ER and SYM models supported, ARD model not advisable due to processing times and crashing - potentially fix later. In most cases, ER produces best AICc scores for phylogenetic characters (from experimenting).
-### FIXED: Dealing with optional specific character ordering via specific rate index matrices. Dependent on phylodisc::rate.index function.
-### NEW: Outputs a list: $anc_states is a matrix of the ancestral states per numbered node (numbering is correct and follows from tip numbers);
-###		$stats is a dataframe detailing the log likelihood, AIC and AICc scores from the corHMM output per character.
-### Not supported: invariant characters, uncertainties in curly braces, gaps (which get automatically converted to ambiguities).
-### 'MODIFIED' indicates where copilot has assisted editing the code for smoother running.
+### Wrapper function for reconstructing the ancestral states for an entire discrete character matrix. This function uses ace() from the 'ape' package.
+### Maximum likelihood is only option for estimating ancestral states for discrete characters. However, model can be specified as either equal rates "ER" or 
+### all rates different "ARD". Marginal likelihood estimation can be selected if marginal = TRUE.
+### IMPORTANT: currently "ARD" is not working, function needs editing and experimenting with.
 
-anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
+# Arguments:
+# matrix - discrete character matrix
+# tree - phylogenetic tree of the class 'phylo'. Has to be fully bifurcating.
+# model - either "ER" or "ARD"
+# marginal - whether marginal likelihood should be estimated. See details of ace() in 'ape' for details on arguments.
+
+anc.discrete <- function(matrix, tree, model=model, marginal=FALSE){
+
+# Matrix needs to have no polymophisms or uncertainties, and ambiguities need to be specified as NA
+
+matrix <- poly.to.amb(matrix)
+matrix[matrix == "-"] <- "?"
+matrix[matrix == "?"] <- NA
+
+# Subfunction to reconstruct ancestral state for each character.
+
+anc.discrete.char <- function(char, tree, model=model, marginal=FALSE){
 	
-	# Dependencies
-	if(!requireNamespace("corHMM", quietly = TRUE)) stop("corHMM package required.")
-	if(!exists("get.states", mode = "function")) stop("get.states() not found.")
-	if(!exists("rate.index", mode = "function")) stop("rate.index() not found.")
+	char <- as.factor(char)
+	
+	# Anc state reconstruction for one character in the matrix
+	anc <- ace(char, tree, type="discrete", method="ML", model=model, marginal=FALSE)
+	
+	liks <- anc$lik.anc
+	
+	anc_nodes <- cbind(liks, c(seq(1:dim(liks)[1])))
+anc_nodes <- anc_nodes[,-c(1:dim(liks)[2])]
 
-	# Tell user to convert all uncertainties to polymorphisms or ambiguities in preprocessing.
-	# Tell user to convert all gaps to ambiguities in preprocessing.
-	# Curly-brace uncertainty check
-	if(any(grepl("\\{[^}]+\\}", matrix, perl = TRUE))){
-		msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
-		msg <- paste0(msg, "Please preprocess your data before calling anc.discrete. Two common options:\n\n")
-		msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n\n\n")
-		msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n\n")
-		stop(msg)
-	}
-
-	# Invariant detection (vectorized)
-	is_invariant <- function(col) {
-		vals <- col[!is.na(col) & col != "?"]
-		length(vals) == 0 || length(unique(vals)) == 1
-	}
-	inv_idx <- which(apply(matrix, 2, is_invariant))
-	if(length(inv_idx) > 0){
-		names <- colnames(matrix)
-		if(!is.null(names)){
-			stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(names[inv_idx], collapse = ", ")))
-		} else {
-			stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(inv_idx, collapse = ", ")))
-		}
-	}
-
-	# Gaps are treated as ambiguities.
-	matrix[matrix == "-"] <- "?"
-
-	# Polymorphisms need to be encoded differently to be read properly by corHMM (e.g. (01) -> 0&1).
-# Note: this block of code excludes the use of 'gsub' because there were errors.
-	replace_poly <- function(x) {
-  poly_replacer <- function(s) {
-    s <- as.character(s)[1]
-    # Find all ("(<digits>)") in s
-    m <- gregexpr("\\((\\d+)\\)", s, perl = TRUE)
-    matches <- regmatches(s, m)[[1]]
-    if (length(matches) == 0) return(s)
-    replaced <- s
-    for (match in matches) {
-      digits <- unlist(strsplit(sub("^\\((\\d+)\\)$", "\\1", match), ""))
-      replacement <- paste(digits, collapse = "&")
-      replaced <- sub(match, replacement, replaced, fixed = TRUE)
-    }
-    replaced
-  }
-  if (is.matrix(x)) {
-    result <- matrix(
-      vapply(as.character(x), poly_replacer, character(1)),
-      nrow = nrow(x), ncol = ncol(x),
-      dimnames = dimnames(x)
-    )
-    return(result)
-  } else {
-    vapply(as.character(x), poly_replacer, character(1))
-  }
+# Select the character state with the highest probability for each node (ancestor).
+for(i in 1:length(anc_nodes)){
+	anc_nodes[[i]] <- as.numeric(names(which.max(liks[i,])))
 }
-	mat_new <- replace_poly(matrix)
 
-	# Subfunction to reconstruct ancestral state for each character.
-	# --- MODIFIED: now also returns the corHMM object so that fit statistics can be extracted later ---
-	anc.discrete.char <- function(tree, char, model, rate_index, ord){
-		# Check if this character is ordered
-		if (!is.null(ord) && rate_index %in% ord) {
-			# Use custom rate index matrix for ordered characters
-			rate_mat <- rate.index(char[,2], model=model)
-			anc <- corHMM(tree, char, model=model, rate.cat=1, rate.mat=rate_mat)
-		} else {
-			# Default behavior
-			anc <- corHMM(tree, char, model=model, rate.cat=1)
-		}
-		liks <- anc$states
-		anc_nodes <- cbind(liks, c(seq(1:dim(liks)[1])))
-		anc_nodes <- anc_nodes[,-c(1:dim(liks)[2])]
-		# Select most likely state for each node and shift output by -1 so it reflects original character scorings.
-		for(i in 1:length(anc_nodes)){
-			anc_nodes[[i]] <- as.numeric(which.max(liks[i,])) -1
-		}
-		# --- MODIFIED: return both the ancestral nodes and the corHMM fit object ---
-		return(list(nodes = anc_nodes, fit = anc))
-	}
+return(anc_nodes)
 
-	# Make a list of dataframes that contain one character each
-	char_dfs <- list()
-	for (i in seq_len(ncol(mat_new))) {
-		df <- data.frame(V1 = rownames(mat_new), V2 = mat_new[, i], stringsAsFactors = FALSE)
-		rownames(df) <- seq_len(nrow(df))
-		char_dfs[[i]] <- df
-	}
+}
 
-	# --- MODIFIED: Collect both ancestral states and corHMM fits in one step ---
-	results <- lapply(seq_along(char_dfs), function(i) {
-		anc.discrete.char(tree, char_dfs[[i]], model, i, ord)
-	})
+# Reconstruct ancestral states for every character in the matrix.
+nodes <- c()
+for(j in 1:dim(matrix)[2]){
+	
+	nodes[[j]] <- anc.discrete.char(matrix[,j], tree, model=model, marginal=FALSE)
+	
+}
+anc_states <- matrix(unlist(nodes), ncol=length(nodes), byrow=FALSE)
+row.names(anc_states) <- as.character(c(1:(length(tree$tip.label)-1)+length(tree$tip.label)))
 
-	# --- MODIFIED: Separate the outputs ---
-	nodes <- lapply(results, function(x) x$nodes)
-	fits  <- lapply(results, function(x) x$fit)
 
-	anc_states <- matrix(unlist(nodes), ncol=length(nodes), byrow=FALSE)
-	row.names(anc_states) <- as.character((1:(length(tree$tip.label)-1)+length(tree$tip.label))) # FIXED missing parenthesis
+# Returns a matrix of ancestral character states for each node, ordered in the same order as specified in the tree (phylo object).
+return(anc_states)
 
-	# --- MODIFIED: Extract loglik, AIC, AICc from corHMM fit objects and store in a table ---
-	fit_stats <- data.frame(Character = seq_along(char_dfs), logLik = sapply(fits, function(x) x$loglik), AIC = sapply(fits, function(x) x$AIC), AICc = sapply(fits, function(x) x$AICc))
-
-	# --- MODIFIED: Return everything in a list called fit ---
-	fit <- list(anc_states = anc_states, stats = fit_stats)
-
-	return(fit)
 }
