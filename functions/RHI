@@ -2,10 +2,9 @@
 #
 # V2.4
 
-### NEED TO FIX: dealing with missing states (e.g. character in theory has 5 states, 0:4, but <5 are observed in matrix. Current function assumes
-# all states are present and this does something to the calculation if it is not true. Need to fix so it still honours character ordering.
+###
 
-# Fixed in 2.4: lmin calculation now sums per-character lmin which gives accurate values.
+# Fixed in 2.4: lmin calculation now sums per-character lmin which gives accurate values, and missing states are allowed (e.g. 0, 1, 3, 4, 5 - 2 is an unobserved state)
 
 ### Note: do not supply a cost matrix object if per.char = TRUE, default cost matrix is created for each character within function call. 
 ##### RHI: unified function (optimized, robust invariant detection, prints RHI values)
