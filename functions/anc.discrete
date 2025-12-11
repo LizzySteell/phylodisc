@@ -12,6 +12,8 @@
 ### Not supported: invariant characters, uncertainties in curly braces, gaps (which get automatically converted to ambiguities).
 ### 'MODIFIED' indicates where copilot has assisted editing the code for smoother running.
 
+### TO DO: include option to output polymorphic scorings when probability of states is equal or near equal (threshold range of values e.g. 45-55 or 40-60).
+
 anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	
 	# Dependencies
