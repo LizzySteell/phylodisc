@@ -1,25 +1,15 @@
 # phylodisc
 
-phylodisc provides tools for analysing discrete character data (typically morphological) in a phylogenetic context. It includes matrix homoplasy indices (RHI, HSR, HER), and allows calculation of per-character RHI and with multiphylo trees, as well as utilities to handle polymorphisms, uncertainties, invariant characters, accommodating character matrix changes in lists of ordered characters, and support for ordered multistate characters using cost matrices. It containts several wrappers and helpers to utilise functions from the 'ape' (Paradis and Schliep 2019), 'phangorn' (Schliep, 2011) and 'phytools' (Revell, 2024) packages, including creating a phydat object for morphological data that contains specific polymorphic states, a function to estimate ancestral states for discrete phylogenetic characters, and a function to create a Gower distance matrix that accounts for character ordering. Previous versions of this code were developed in the repository https://github.com/LizzySteell/Homoplasy with the original versions accompanying 'Revealing patterns of homoplasy in discrete phylogenetic datasets with a cross-comparable index' (Steell et al, 2025).
+phylodisc provides tools for analysing discrete character data (typically morphological) in a phylogenetic context. It includes matrix homoplasy indices (RHI, HSR, HER), and allows calculation of per-character RHI and with multiphylo trees, as well as utilities to handle polymorphisms, uncertainties, invariant characters, accommodating character matrix changes in lists of ordered characters, and support for ordered multistate characters using cost matrices. It contains several wrappers and helpers to utilise functions from the 'ape' (Paradis and Schliep 2019), 'phangorn' (Schliep, 2011) and 'phytools' (Revell, 2024) packages, including creating a phydat object for morphological data that contains specific polymorphic states, a function to estimate ancestral states for discrete phylogenetic characters, and a function to create a MORD (based on Gower distance) matrix that accounts for character ordering. Previous versions of this code were developed in the repository https://github.com/LizzySteell/Homoplasy with the original versions accompanying 'Revealing patterns of homoplasy in discrete phylogenetic datasets with a cross-comparable index' (Steell et al, 2025).
 
 
 ## Installation
 
-Install the development version from GitHub:
 
-```r
-# install remotes if needed
-install.packages("remotes")
-remotes::install_github("LizzySteell/phylodisc")
-```
 
 ## Quick example
 
-```r
-library(phylodisc)
-# example usage (replace with real objects)
-# RHI.char(my_phydat, my_tree, n = 100)
-```
+
 
 ## Citation and reproducibility
 
