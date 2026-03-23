@@ -10,7 +10,7 @@ V1.5 (robust indexing)
 # abs_val_min: minimum number of characters with the same value (e.g. RHI = 0) to form its own absolute-value bin (e.g. abs_val_min = 10 means minimum of 10 characters with the same value required to form own bin). Default = 20
 # intervals: numeric vector of bin intervals for range bins (e.g. c(0, 1, 0.1) would bin RHI values every 0.1 between 0 and 1)
 # round_digits: number of digits to round (decimal places) for equality grouping (default: 3)
-# min_bin_size: minimum number of characters for any bin (default: 5; bins with fewer are merged into the nearest non-absolute bin)
+# min_bin_size: minimum number of characters for any bin (default: 1; bins with fewer are merged into the nearest non-absolute bin)
 # excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprocessing from remove.invar function. Must be reintroduced if you want accurate character lists for each partition.
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing); box plot for distributions of bins; variance statistics.
 
