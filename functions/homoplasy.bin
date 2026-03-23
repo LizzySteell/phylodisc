@@ -1,5 +1,7 @@
-### 27-Oct-2025 homoplasy.bin function
-V1.4
+### 23-Mar-2026 homoplasy.bin function
+V1.5
+
+# Updated so values directly from RHI can be used without unnaming vector
 
 ### Binning RHI values by absolute value threshold, rounding, minimum bin size, and excluded character NA handling, including plotting RHI distribution within bins and summary stats.
 # This version ensures correct frame shift and unique naming when 'excluded' is specified,
@@ -12,6 +14,7 @@ V1.4
 # min_bin_size: minimum number of characters for any bin (default: 5; bins with fewer are merged into the nearest non-absolute bin)
 # excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprosessing from remove.invar function. Must be reintroduced if you want accurate character lists for each partition.
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing); box plot for distributions of bins; variance statistics.
+
 
 homoplasy.bin <- function(
   rhi_vals, 
@@ -175,3 +178,4 @@ rownames(stats_df) <- NULL
     stats = stats_df
   ))
 }
+
