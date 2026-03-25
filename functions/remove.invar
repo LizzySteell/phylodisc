@@ -1,8 +1,11 @@
-### 2024-Nov-14
+### 2026-Mar-25
 
 ### Function to remove invariant characters (sites) from a phylogenetic character taxon matrix. Output is a new matrix with columns removed that
 ### contain no variance in state. Removed characters are printed. Updated version (November 2024) ensures that characters with only ambiguities
-### or characters with ambiguities plus one state scoring are also removed. May need polymorphisms changing to ambiguities using poly.to.amb().
+### or characters with ambiguities plus one state scoring are also removed. Patch to ensure function still runs to completion if no invariant sites detected,
+### and unchanged matrix is returned (now compatible for use with apply functions).
+
+
 
 remove.invar <- function(matrix){
 	
@@ -13,34 +16,40 @@ remove.invar <- function(matrix){
 	matrix[matrix == '?'] <- '99'
 	
 	suppressWarnings({
-	chars_to_drop <- c()
-for(i in 1:ncol(matrix)){
-	if (isTRUE(sd(matrix[,i], na.rm=TRUE) == 0)){
-		chars_to_drop[[i]] <- i
-	}
-	
-}})
+		chars_to_drop <- c()
+		for(i in 1:ncol(matrix)){
+			if (isTRUE(sd(matrix[,i], na.rm=TRUE) == 0)){
+				chars_to_drop[[i]] <- i
+			}
+		}
+	})
 
-matrix[matrix == '99'] <- '?' # Changing them back
+	matrix[matrix == '99'] <- '?' # Changing them back
 
-matrix_ <- matrix
+	matrix_ <- matrix
 
-# Do it again so it finds characters with only one state + ambiguities
-
+	# Do it again so it finds characters with only one state + ambiguities
 	suppressWarnings({
-	#chars_to_drop_ <- c()
-for(j in 1:ncol(matrix_)){
-	if(isTRUE(sd(matrix_[,j], na.rm=TRUE) == 0)){
-		chars_to_drop[[j]] <- j
+		for(j in 1:ncol(matrix_)){
+			if(isTRUE(sd(matrix_[,j], na.rm=TRUE) == 0)){
+				chars_to_drop[[j]] <- j
+			}
+		}
+	})
+
+	chars_to_drop <- unlist(chars_to_drop)
+
+	# ---- PATCH: handle case with nothing to drop ----
+	if (length(chars_to_drop) == 0) {
+		print("No invariant characters found; no characters removed.")
+		return(matrix)
 	}
-	
-}})
+	# -------------------------------------------------
 
-chars_to_drop <- unlist(chars_to_drop)
-#chars_to_drop_ <- unlist(chars_to_drop_)
-matrix_new <- matrix[,-c(chars_to_drop)]
+	matrix_new <- matrix[, -c(chars_to_drop), drop = FALSE]
 
-print("Following invariant characters removed:") 
-print(c(chars_to_drop))
+	print("Following invariant characters removed:") 
+	print(c(chars_to_drop))
 
-return(matrix_new) }
+	return(matrix_new)
+}
