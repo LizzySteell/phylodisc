@@ -8,7 +8,7 @@
 ###            See also: Brocklehurst N, Ford DP, Benson RB. Early origins of divergent patterns of morphological evolution on the mammal and reptile stem-lineages. Systematic Biology. 2022 Sep 1;71(5):1195-209.
 ###            Brocklehurst N, Benson RJ. Multiple paths to morphological diversification during the origin of amniotes. Nature Ecology & Evolution. 2021 Sep;5(9):1243-9.              
 
-find.pairs<-function(groups,morph.dist,pat.dist)
+find.pairs<-function(morph.dist, groups, pat.dist)
 {
 
 	taxes.1<-vector(length=0)
