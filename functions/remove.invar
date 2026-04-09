@@ -5,7 +5,7 @@
 ### or characters with ambiguities plus one state scoring are also removed. Patch to ensure function still runs to completion if no invariant sites detected,
 ### and unchanged matrix is returned (now compatible for use with apply functions).
 
-
+### TO DO: Must introduce removing characters that contain one character state and the rest of the scorings for that character are ?.
 
 remove.invar <- function(matrix){
 	
