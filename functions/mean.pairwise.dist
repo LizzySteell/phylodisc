@@ -1,0 +1,21 @@
+# 2026-June-14
+# Function to calculate the (arithmetic) mean pairwise distance for pre-defined groups/taxa in a distance matrix.
+# Compatible with 'dispRity' package functions
+# In this context, it's used to calculate the mean pairwise MORD (Maximum Observable Rescaled Distance) from a MORD matrix derived from morphological traits.
+
+# Define custom metric function
+ mean.pairwise.dist <- function(dist, ...) {
+  dist <- as.matrix(dist)
+  
+  if(length(dist) == 0 || any(dim(dist) < 2)) {
+    return(NA_real_)
+  }
+  
+  pairwise_distances <- dist[row(dist) < col(dist)]
+  
+  if(length(pairwise_distances) == 0) {
+    return(NA_real_)
+  }
+  
+  mean(pairwise_distances, na.rm = TRUE)
+}
