@@ -32,4 +32,4 @@ Steell EM, Hsiang AY, Field DJ, Revealing patterns of homoplasy in discrete phyl
 
 ## License
 
-MIT — see LICENSE file.
+GNU V3 — see LICENSE file.
