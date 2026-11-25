@@ -2,7 +2,8 @@ Package: phylodisc
 Type: Package
 Title: Tools for Analysing Discrete Phylogenetic Character Data
 Version: 0.1.0
-Authors@R: person("Elizabeth", "Steell", role = c("aut", "cre"))
+Authors@R: person("Elizabeth", "Steell", role = c("aut", "cre"),
+    email = "104013969+LizzySteell@users.noreply.github.com")
 Description: Tools for analysing discrete (typically morphological) character
     data in a phylogenetic context, including matrix homoplasy indices (RHI,
     HSR, HER), handling of polymorphisms, uncertainties and invariant
