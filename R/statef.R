@@ -1,0 +1,56 @@
+##### 2024-02-08
+
+### STATE FREQUENCY FUNCTION v3
+######
+### Calculate state frequencies in a matrix
+
+
+statef <- function(data){
+	#data - matrix array character taxon matrix
+	
+	data[data == "-"] <- "?" # Changes gaps to ambiguities
+	data <- uncert.to.poly(data) # Changes curly brackets to round brackets
+	
+	scores <- row.names(table(data)) #Makes a vector of all the possible scores, including ambiguities and polymorphisms (if present)
+	 	
+		
+		 # Make a subfunction to extract polymorphisms from parentheses - round brackets
+  paren_extract <- function(x) {
+    # Find characters within round brackets
+    extracted <- gsub("[()]", "", x)
+    return(extracted)}
+		
+		#Make vectors of polymorphisms - with and without round brackets
+			polys <- unlist(lapply(scores, paren_extract)) #This has no brackets
+		
+			if(length(polys) == 0){
+			
+			states_ <- c()
+			for(j in 1:ncol(data)){
+			states_[[j]] <- length(unique(data[,j])[! unique(data[,j]) %in% c("?")])
+	 		#Excludes ambiguities if polymorphisms not present
+	 		}
+	 		
+	 		
+	 		} else {
+	 			
+	 		polys_brackets <- unlist(lapply(polys, parenthesize))
+	 			
+	states_ <- c()
+		for(n in 1:ncol(data)){
+		states_[[n]] <- length(unique(data[,n])[! unique(data[,n]) %in% c("?", polys_brackets)]) #Excludes ambiguities and polymorphisms.
+		 }
+		
+		
+}
+
+state_freq <- c()
+for(l in 1:length(sort(unique(unlist(states_))))){ #For each frequency of each character type (as in two-state, three-state etc)
+	 
+				state_freq[[l]] <- 	table(sort(unlist(states_)))[l] 
+					
+					 }
+					 states <- unlist(state_freq)
+					 states_f <- states/sum(states)
+					return(states_f)
+					}		

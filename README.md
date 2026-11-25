@@ -5,6 +5,13 @@ phylodisc provides tools for analysing discrete character data (typically morpho
 
 ## Installation
 
+```r
+# install.packages("remotes")
+remotes::install_github("LizzySteell/phylodisc")
+library(phylodisc)
+```
+
+The original function files remain in `functions/` and can still be loaded with `source()`.
 
 
 ## Quick example

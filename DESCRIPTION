@@ -1,0 +1,16 @@
+Package: phylodisc
+Type: Package
+Title: Tools for Analysing Discrete Phylogenetic Character Data
+Version: 0.1.0
+Authors@R: person("Elizabeth", "Steell", role = c("aut", "cre"))
+Description: Tools for analysing discrete (typically morphological) character
+    data in a phylogenetic context, including matrix homoplasy indices (RHI,
+    HSR, HER), handling of polymorphisms, uncertainties and invariant
+    characters, support for ordered multistate characters using cost matrices,
+    and helpers for building 'phyDat' objects and 'MrBayes' partition blocks.
+License: AGPL (>= 3)
+Encoding: UTF-8
+Imports: ape, phangorn, stats
+Suggests: corHMM
+URL: https://github.com/LizzySteell/phylodisc
+BugReports: https://github.com/LizzySteell/phylodisc/issues
