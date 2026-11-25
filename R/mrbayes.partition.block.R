@@ -1,6 +1,6 @@
 ### 27-Oct-2025
 
-V1.0 mrbayes.partition.block function
+# V1.0 mrbayes.partition.block function
 
 #' Write MrBayes partition block from homoplasy.bin output
 #' This code is a wedding gift to my dear friend Juan Benito

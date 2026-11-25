@@ -1,6 +1,6 @@
 ### 23-Mar-2026 homoplasy.bin function
 
-V1.5 (robust indexing)
+# V1.5 (robust indexing)
 
 ### Binning RHI values by absolute value threshold, rounding, minimum bin size, and excluded character NA handling, including plotting RHI distribution within bins and summary stats.
 # Robust fix: bin_list stores INTEGER INDICES internally, and bins are converted to names only on return.
