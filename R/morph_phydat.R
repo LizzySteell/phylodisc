@@ -7,7 +7,7 @@
 
 # Polymorphisms and uncertainties are treated as the same here.
 
-# Uses the contrast_matrix() and uncert.to.poly() functions - see functions documentation.
+# Uses the contrast_matrix() and uncert_to_poly() functions - see functions documentation.
 
 
 #' Make a phyDat object from a morphological matrix
@@ -33,7 +33,7 @@ morph_phydat <- function(matrix){
 	
 	# Change uncertainties into polymorphisms, if any
 	
-	matrix <- uncert.to.poly(matrix)
+	matrix <- uncert_to_poly(matrix)
 	
 	# Create phyDat object
 	

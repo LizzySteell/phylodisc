@@ -28,7 +28,7 @@ contrast_matrix <- function(data) {
   data[data == '-'] <- '?'
   
   # Change all uncertainties to polymorphisms to remove curly brackets and only work with round brackets
-  data <- uncert.to.poly(data)
+  data <- uncert_to_poly(data)
   
   scores <- row.names(table(data)) # Makes a vector of all the possible scores, including ambiguities and polymorphisms
 

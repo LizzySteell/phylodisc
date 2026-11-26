@@ -29,7 +29,7 @@ an absolute-value bin (e.g. RHI = 0).}
 nearest non-absolute bin.}
 
 \item{excluded}{Integer vector of character indices removed beforehand (e.g.
-by \code{\link[=remove.invar]{remove.invar()}}), reinstated so that numbering is correct.}
+by \code{\link[=remove_invar]{remove_invar()}}), reinstated so that numbering is correct.}
 
 \item{plot}{Logical. Plot the RHI distribution within bins.}
 }

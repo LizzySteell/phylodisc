@@ -43,3 +43,45 @@ morph.phydat <- function(...) {
   .Deprecated("morph_phydat", package = "phylodisc")
   morph_phydat(...)
 }
+
+#' @rdname phylodisc-deprecated
+#' @export
+adjust.ord <- function(...) {
+  .Deprecated("adjust_ord", package = "phylodisc")
+  adjust_ord(...)
+}
+
+#' @rdname phylodisc-deprecated
+#' @export
+remove.invar <- function(...) {
+  .Deprecated("remove_invar", package = "phylodisc")
+  remove_invar(...)
+}
+
+#' @rdname phylodisc-deprecated
+#' @export
+prep.subset <- function(...) {
+  .Deprecated("prep_subset", package = "phylodisc")
+  prep_subset(...)
+}
+
+#' @rdname phylodisc-deprecated
+#' @export
+poly.to.amb <- function(...) {
+  .Deprecated("poly_to_amb", package = "phylodisc")
+  poly_to_amb(...)
+}
+
+#' @rdname phylodisc-deprecated
+#' @export
+uncert.to.amb <- function(...) {
+  .Deprecated("uncert_to_amb", package = "phylodisc")
+  uncert_to_amb(...)
+}
+
+#' @rdname phylodisc-deprecated
+#' @export
+uncert.to.poly <- function(...) {
+  .Deprecated("uncert_to_poly", package = "phylodisc")
+  uncert_to_poly(...)
+}

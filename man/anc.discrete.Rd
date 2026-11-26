@@ -26,7 +26,7 @@ Wrapper around \code{corHMM::corHMM()} that reconstructs marginal ancestral
 states for every character. Polymorphisms and ambiguities are treated as
 all possible states. Ordered characters can be specified. Requires the
 \pkg{corHMM} package, a fully bifurcating tree with branch lengths (no
-zero-length branches) and no invariant characters (see \code{\link[=remove.invar]{remove.invar()}}).
+zero-length branches) and no invariant characters (see \code{\link[=remove_invar]{remove_invar()}}).
 Uncertainties in curly braces must be converted first
-(\code{\link[=uncert.to.poly]{uncert.to.poly()}}, \code{\link[=uncert.to.amb]{uncert.to.amb()}}).
+(\code{\link[=uncert_to_poly]{uncert_to_poly()}}, \code{\link[=uncert_to_amb]{uncert_to_amb()}}).
 }

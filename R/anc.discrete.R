@@ -20,9 +20,9 @@
 #' states for every character. Polymorphisms and ambiguities are treated as
 #' all possible states. Ordered characters can be specified. Requires the
 #' \pkg{corHMM} package, a fully bifurcating tree with branch lengths (no
-#' zero-length branches) and no invariant characters (see [remove.invar()]).
+#' zero-length branches) and no invariant characters (see [remove_invar()]).
 #' Uncertainties in curly braces must be converted first
-#' ([uncert.to.poly()], [uncert.to.amb()]).
+#' ([uncert_to_poly()], [uncert_to_amb()]).
 #'
 #' @param matrix Character matrix with taxa as rows.
 #' @param tree A `phylo` tree.
@@ -46,8 +46,8 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	if(any(grepl("\\{[^}]+\\}", matrix, perl = TRUE))){
 		msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
 		msg <- paste0(msg, "Please preprocess your data before calling anc.discrete. Two common options:\n\n")
-		msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n\n\n")
-		msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n\n")
+		msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert_to_poly(matrix)\n\n\n")
+		msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert_to_amb(matrix)\n\n")
 		stop(msg)
 	}
 
@@ -60,9 +60,9 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	if(length(inv_idx) > 0){
 		names <- colnames(matrix)
 		if(!is.null(names)){
-			stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(names[inv_idx], collapse = ", ")))
+			stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc.discrete.", paste(names[inv_idx], collapse = ", ")))
 		} else {
-			stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove.invar()) before running anc.discrete.", paste(inv_idx, collapse = ", ")))
+			stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc.discrete.", paste(inv_idx, collapse = ", ")))
 		}
 	}
 

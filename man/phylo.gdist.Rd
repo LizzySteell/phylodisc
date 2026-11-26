@@ -9,7 +9,7 @@ phylo.gdist(matrix, ord = NULL, incompat_handling = NULL)
 \arguments{
 \item{matrix}{Character matrix with taxa as rows and characters as columns.}
 
-\item{ord}{Optional vector of ordered characters (see \code{\link[=adjust.ord]{adjust.ord()}}).}
+\item{ord}{Optional vector of ordered characters (see \code{\link[=adjust_ord]{adjust_ord()}}).}
 
 \item{incompat_handling}{How to treat taxon pairs with no overlapping
 scores: \code{"NaN"} (default), \code{"median"} (replace with the median distance)
@@ -21,5 +21,5 @@ A square distance matrix with taxon names as dimnames.
 \description{
 Computes Gower distances (MORD) between taxa, ignoring missing data and
 gaps, with support for polymorphisms and ordered characters. Invariant
-characters should be removed first (\code{\link[=remove.invar]{remove.invar()}}).
+characters should be removed first (\code{\link[=remove_invar]{remove_invar()}}).
 }

@@ -7,6 +7,12 @@
 \alias{cost.matrix}
 \alias{contrast.matrix}
 \alias{morph.phydat}
+\alias{adjust.ord}
+\alias{remove.invar}
+\alias{prep.subset}
+\alias{poly.to.amb}
+\alias{uncert.to.amb}
+\alias{uncert.to.poly}
 \title{Deprecated function names}
 \usage{
 get.states(...)
@@ -18,6 +24,18 @@ cost.matrix(...)
 contrast.matrix(...)
 
 morph.phydat(...)
+
+adjust.ord(...)
+
+remove.invar(...)
+
+prep.subset(...)
+
+poly.to.amb(...)
+
+uncert.to.amb(...)
+
+uncert.to.poly(...)
 }
 \arguments{
 \item{...}{Arguments passed to the new function.}

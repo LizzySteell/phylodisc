@@ -11,7 +11,7 @@
 # intervals: numeric vector of bin intervals for range bins (e.g. c(0, 1, 0.1) would bin RHI values every 0.1 between 0 and 1)
 # round_digits: number of digits to round (decimal places) for equality grouping (default: 3)
 # min_bin_size: minimum number of characters for any bin (default: 1; bins with fewer are merged into the nearest non-absolute bin)
-# excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprocessing from remove.invar function. Must be reintroduced if you want accurate character lists for each partition.
+# excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprocessing from remove_invar function. Must be reintroduced if you want accurate character lists for each partition.
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing); box plot for distributions of bins; variance statistics.
 
 #' Bin characters by homoplasy level
@@ -30,7 +30,7 @@
 #' @param min_bin_size Minimum bin size; smaller bins are merged into the
 #'   nearest non-absolute bin.
 #' @param excluded Integer vector of character indices removed beforehand (e.g.
-#'   by [remove.invar()]), reinstated so that numbering is correct.
+#'   by [remove_invar()]), reinstated so that numbering is correct.
 #' @param plot Logical. Plot the RHI distribution within bins.
 #' @return A list with `bins` (character names or numbers in each bin) and
 #'   `stats` (summary statistics per bin).

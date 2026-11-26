@@ -1,4 +1,4 @@
-### remove.invar() v2.0
+### remove_invar() v2.0
 ### 2026-Sep-08
 
 ### Function to remove invariant characters (sites) from a phylogenetic character taxon matrix. Output is a new matrix with columns removed that
@@ -12,11 +12,11 @@
 ###
 ### NEW: optional 'return_removed' argument (default FALSE). If TRUE, the function returns a list with elements
 ### 'matrix' (the new matrix with invariant characters removed) and 'removed' (integer vector of the original column
-### indices that were removed). This is intended to be used together with phylodisc::adjust.ord, e.g.:
+### indices that were removed). This is intended to be used together with phylodisc::adjust_ord, e.g.:
 ###
-###   result <- remove.invar(matrix, return_removed = TRUE)
+###   result <- remove_invar(matrix, return_removed = TRUE)
 ###   new_matrix <- result$matrix
-###   new_ord <- adjust.ord(ord, exclude = result$removed)
+###   new_ord <- adjust_ord(ord, exclude = result$removed)
 ###
 ### If no invariant characters are found, the unchanged matrix is returned (or a list with an empty 'removed' vector
 ### when return_removed = TRUE), so the function remains compatible for use with apply functions.
@@ -28,18 +28,18 @@
 #'
 #' @param matrix Character matrix with taxa as rows and characters as columns.
 #' @param return_removed Logical. If `TRUE`, also return the original indices of
-#'   removed characters, for use with [adjust.ord()].
+#'   removed characters, for use with [adjust_ord()].
 #' @return The matrix without invariant characters, or if
 #'   `return_removed = TRUE` a list with `matrix` and `removed`.
 #' @examples
 #' m <- cbind(c("0", "1", "0"), c("1", "1", "?"))
-#' remove.invar(m, return_removed = TRUE)
+#' remove_invar(m, return_removed = TRUE)
 #' @export
-remove.invar <- function(matrix, return_removed = FALSE){
+remove_invar <- function(matrix, return_removed = FALSE){
 	
 	# matrix - phylogenetic character matrix
 	# return_removed - logical (T/F); if TRUE, also returns the vector of removed character indices
-	#                  (original column positions), for use with phylodisc::adjust.ord
+	#                  (original column positions), for use with phylodisc::adjust_ord
 
 	# A character is invariant if, ignoring '?' (ambiguities), it has zero or one unique state.
 	is_invariant <- function(col){

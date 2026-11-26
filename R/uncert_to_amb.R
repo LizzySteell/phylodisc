@@ -1,5 +1,5 @@
 ### 2025-10-21
-### uncert.to.amb(): convert uncertainties (curly braces {}) to ambiguities '?' but keep polymorphisms (round parentheses)
+### uncert_to_amb(): convert uncertainties (curly braces {}) to ambiguities '?' but keep polymorphisms (round parentheses)
 #
 # This function scans a character matrix (or data.frame) and replaces any cell
 # containing uncertainty notation using curly braces (e.g. "{01}", "{0 1}") with
@@ -19,9 +19,9 @@
 #' @param mat Matrix or data frame of character scores.
 #' @return A character matrix.
 #' @examples
-#' uncert.to.amb(matrix(c("0", "{01}", "(12)"), ncol = 1))
+#' uncert_to_amb(matrix(c("0", "{01}", "(12)"), ncol = 1))
 #' @export
-uncert.to.amb <- function(mat){
+uncert_to_amb <- function(mat){
   # Accept data.frame or matrix
   if (is.data.frame(mat)) {
     mat <- as.matrix(mat)

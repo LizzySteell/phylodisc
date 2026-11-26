@@ -17,7 +17,7 @@ state_f <- function(data){
 	#data - matrix array character taxon matrix
 	
 	data[data == "-"] <- "?" # Changes gaps to ambiguities
-	data <- uncert.to.poly(data) # Changes curly brackets to round brackets
+	data <- uncert_to_poly(data) # Changes curly brackets to round brackets
 	
 	scores <- row.names(table(data)) #Makes a vector of all the possible scores, including ambiguities and polymorphisms (if present)
 	 	

@@ -3,8 +3,8 @@
 ### This generates a distance matrix from discrete phylogenetic data where missing data are ignored so they are not considered in the calculations and do not skew the matrix.
 ### StatMatch dependency in this version is no longer necessary due to need for creating custom code to obtain Gower distances when polymorphisms are included.
 ### Notes:
-### Preprocessing requirements: Exclude invariant characters using phylodisc::remove.invar. Gaps and ambiguities are treated the same as missing data (encoded as NA within function).
-###	Ordered characters are allowed and can be specified in the optional argument 'ord'. Use phylodisc::adjust.ord to generate a new vector of ordered characters if remove.invar applied to matrix.
+### Preprocessing requirements: Exclude invariant characters using phylodisc::remove_invar. Gaps and ambiguities are treated the same as missing data (encoded as NA within function).
+###	Ordered characters are allowed and can be specified in the optional argument 'ord'. Use phylodisc::adjust_ord to generate a new vector of ordered characters if remove_invar applied to matrix.
 ### Distances between states in ordered characters are step-wise and the values normalised so all pairwise per-character distances calculated across matrix are either 0, 1 or a value between in the case of ordered multistate characters.
 ### NEW: Polymorphisms and character ordering have been dealt with but need closer scrutiny with test data.
 ### NEW: Options to deal with taxon pairs with non-overlapping character scorings. Use argument 'incompat_handling'. Default option is to leave untreated so resulting distance matrix will contain NaNs indicating
@@ -18,10 +18,10 @@
 #'
 #' Computes Gower distances (MORD) between taxa, ignoring missing data and
 #' gaps, with support for polymorphisms and ordered characters. Invariant
-#' characters should be removed first ([remove.invar()]).
+#' characters should be removed first ([remove_invar()]).
 #'
 #' @param matrix Character matrix with taxa as rows and characters as columns.
-#' @param ord Optional vector of ordered characters (see [adjust.ord()]).
+#' @param ord Optional vector of ordered characters (see [adjust_ord()]).
 #' @param incompat_handling How to treat taxon pairs with no overlapping
 #'   scores: `"NaN"` (default), `"median"` (replace with the median distance)
 #'   or `"empirical"` (sample from the calculated distances).
