@@ -16,6 +16,13 @@ A character matrix.
 Replaces uncertainties in curly braces (e.g. \code{{01}}) with \verb{?}, leaving
 polymorphisms in round brackets unchanged.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 uncert_to_amb(matrix(c("0", "{01}", "(12)"), ncol = 1))
 }

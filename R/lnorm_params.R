@@ -25,6 +25,10 @@
 #' @param matrix Character matrix; ambiguities (`?`) are excluded per character.
 #' @param tree A fully bifurcating `phylo` tree with branch lengths.
 #' @return A list with `mean_log` and `sd_log`. Also plots the fit.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 lnorm_params <- function(matrix, tree){
 

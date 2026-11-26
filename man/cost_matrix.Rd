@@ -17,6 +17,13 @@ Builds a cost matrix in which a change between adjacent states costs one
 step and a change between non-adjacent states costs the number of steps
 between them. Gaps are treated as missing data.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 m <- matrix(c("0", "1", "2", "1"), ncol = 1)
 cost_matrix(m)

@@ -16,3 +16,10 @@ A named numeric vector of proportions, named by number of states.
 Calculates the proportion of characters with two states, three states, and
 so on, ignoring missing data and polymorphisms.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

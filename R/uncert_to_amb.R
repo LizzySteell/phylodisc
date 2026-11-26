@@ -20,6 +20,10 @@
 #' @return A character matrix.
 #' @examples
 #' uncert_to_amb(matrix(c("0", "{01}", "(12)"), ncol = 1))
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 uncert_to_amb <- function(mat){
   # Accept data.frame or matrix

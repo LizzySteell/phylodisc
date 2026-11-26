@@ -24,6 +24,10 @@
 #' @references Meier R, Kores P, Darwin S (1991) Systematic Biology
 #'   40(1):74-88. Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of
 #'   the Linnean Society 204(1):zlaf024.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 hsr <- function(data, tree, n, modified=TRUE){
 	

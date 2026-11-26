@@ -16,6 +16,13 @@ The matrix with polymorphic scores replaced by \verb{?}.
 Replaces polymorphisms (round brackets) and uncertainties (curly brackets)
 with \verb{?}.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 poly_to_amb(matrix(c("0", "(01)", "{12}", "1"), ncol = 1))
 }

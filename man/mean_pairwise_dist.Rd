@@ -18,3 +18,10 @@ A single numeric value, or \code{NA} if fewer than two taxa.
 Arithmetic mean of the pairwise distances in a distance matrix, e.g. a MORD
 or Gower matrix from \code{\link[=phylo_gdist]{phylo_gdist()}}. Compatible with \code{dispRity} metrics.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

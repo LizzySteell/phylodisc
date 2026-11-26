@@ -83,4 +83,10 @@ The same value as the new function.
 These names are kept so that existing scripts still work. Each one calls the
 function with the new snake_case name and gives a deprecation warning.
 }
+\section{AI use}{
+
+These wrappers were written with GitHub Copilot (Claude Sonnet 5.5); see
+\code{AI_USE.md}.
+}
+
 \keyword{internal}

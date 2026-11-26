@@ -32,6 +32,17 @@
 #'   a list summarising the distribution across trees.
 #' @references Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the
 #'   Linnean Society 204(1):zlaf024.
+#' @section AI use:
+#' The original `RHI` function was written by the package author. Parts of
+#' this version were written with GitHub Copilot (GPT-4.1), which the author
+#' used for troubleshooting, optimisation, and adding warnings and error
+#' messages. This version merges the three original functions `RHI`,
+#' `RHI.char` and `RHI.multi` (the old versions remain in the Homoplasy
+#' repository); the author fixed bugs in the original `RHI.char`, which was
+#' not calculating RHI correctly. Results from the old and new versions were
+#' compared on the same dataset with `set.seed`. The roxygen documentation
+#' and the snake_case name were produced with GitHub Copilot (Claude Sonnet
+#' 5.5); see `AI_USE.md`.
 #' @export
 rhi <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL, per.char = FALSE){
   # Dependencies

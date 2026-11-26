@@ -15,6 +15,10 @@
 #' @examples
 #' m <- matrix(c("0", "1", "2", "1"), ncol = 1)
 #' cost_matrix(m)
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 cost_matrix <- function(data)
 

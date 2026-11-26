@@ -25,6 +25,13 @@ under no phylogenetic signal is estimated by permuting character scores
 across taxa and searching for minimum-length trees with
 \code{\link[phangorn:parsimony]{phangorn::pratchet()}}.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \references{
 Archie JW (1989) Systematic Zoology 38(3):253-269.
 Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the Linnean

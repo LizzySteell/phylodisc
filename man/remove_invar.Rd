@@ -20,6 +20,13 @@ The matrix without invariant characters, or if
 Removes characters with no more than one distinct state once missing data
 (\verb{?}) is ignored.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 m <- cbind(c("0", "1", "0"), c("1", "1", "?"))
 remove_invar(m, return_removed = TRUE)

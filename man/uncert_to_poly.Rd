@@ -16,6 +16,13 @@ The matrix with curly-brace scores converted.
 Replaces uncertainties in curly braces (e.g. \code{{01}}) with polymorphisms in
 round brackets (e.g. \code{(01)}).
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 uncert_to_poly(matrix(c("0", "{01}"), ncol = 1))
 }

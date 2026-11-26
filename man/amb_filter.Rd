@@ -34,3 +34,10 @@ A list with the filtered \code{matrix}, data frames \code{excluded_taxa} and
 Removes taxa (rows) and/or characters (columns) whose proportion of missing
 data exceeds a threshold. When \code{filter = "both"}, taxa are filtered first.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

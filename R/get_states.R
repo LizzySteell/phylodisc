@@ -14,6 +14,10 @@
 #' @return Character vector of states.
 #' @examples
 #' get_states(matrix(c("0", "1", "(01)", "?", "2", "-"), ncol = 1))
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 get_states <- function(data) {
 	

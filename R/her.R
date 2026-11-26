@@ -23,6 +23,10 @@
 #' @references Archie JW (1989) Systematic Zoology 38(3):253-269.
 #'   Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the Linnean
 #'   Society 204(1):zlaf024.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 her <- function(data, tree, n, maxit=500, minit=50, k=10){
 	

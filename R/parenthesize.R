@@ -11,6 +11,10 @@
 #' @return `x` wrapped in round brackets.
 #' @examples
 #' parenthesize("01")
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation was produced with GitHub Copilot (Claude Sonnet 5.5); see
+#' `AI_USE.md`.
 #' @export
 parenthesize <- function(x){
 	

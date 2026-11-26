@@ -11,6 +11,10 @@
 #' @return The matrix with curly-brace scores converted.
 #' @examples
 #' uncert_to_poly(matrix(c("0", "{01}"), ncol = 1))
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 uncert_to_poly <- function(matrix) {
   # Define curly_extract function

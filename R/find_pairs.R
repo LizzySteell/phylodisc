@@ -20,6 +20,10 @@
 #' @return A data frame with one row per taxon pair.
 #' @references Brocklehurst N, Panciroli E, Benevento GL, Benson RB (2021)
 #'   Current Biology 31(13).
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 find_pairs<-function(morph.dist, groups, pat.dist)
 {

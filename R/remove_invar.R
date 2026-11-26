@@ -34,6 +34,10 @@
 #' @examples
 #' m <- cbind(c("0", "1", "0"), c("1", "1", "?"))
 #' remove_invar(m, return_removed = TRUE)
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 remove_invar <- function(matrix, return_removed = FALSE){
 	

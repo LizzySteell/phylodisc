@@ -20,6 +20,17 @@ Prints \code{charset}, \code{partition} and \verb{set partition} commands that c
 pasted into a MrBayes block. This code is a wedding gift to my dear friend
 Juan Benito.
 }
+\section{AI use}{
+
+Written with GitHub Copilot (GPT-4.1) on 27 October 2025. The prompt was
+to 'write a function that creates a MrBayes partition block from the
+output from phylodisc::homoplasy_bin()', with a sample partition block
+pasted in. The author then edited the function manually so that the
+output code was concatenated. The roxygen documentation and the
+snake_case name were produced with GitHub Copilot (Claude Sonnet 5.5);
+see \code{AI_USE.md}.
+}
+
 \examples{
 bins <- list(bins = list(low = c(1, 2, 3), high = c(4, 5)))
 mrbayes_partition_block(bins)

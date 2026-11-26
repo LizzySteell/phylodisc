@@ -15,6 +15,13 @@ parenthesize(x)
 \description{
 Add round brackets to a string
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation was produced with GitHub Copilot (Claude Sonnet 5.5); see
+\code{AI_USE.md}.
+}
+
 \examples{
 parenthesize("01")
 }

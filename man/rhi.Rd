@@ -44,6 +44,20 @@ Calculates the relative homoplasy index of a discrete character matrix on a
 tree, or on a set of trees. Supports polymorphisms, ambiguities and ordered
 characters, and can return per-character values.
 }
+\section{AI use}{
+
+The original \code{RHI} function was written by the package author. Parts of
+this version were written with GitHub Copilot (GPT-4.1), which the author
+used for troubleshooting, optimisation, and adding warnings and error
+messages. This version merges the three original functions \code{RHI},
+\code{RHI.char} and \code{RHI.multi} (the old versions remain in the Homoplasy
+repository); the author fixed bugs in the original \code{RHI.char}, which was
+not calculating RHI correctly. Results from the old and new versions were
+compared on the same dataset with \code{set.seed}. The roxygen documentation
+and the snake_case name were produced with GitHub Copilot (Claude Sonnet
+5.5); see \code{AI_USE.md}.
+}
+
 \references{
 Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the
 Linnean Society 204(1):zlaf024.

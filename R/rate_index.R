@@ -21,6 +21,12 @@
 #' @return A square matrix of rate indices, with `NA` for disallowed transitions.
 #' @examples
 #' rate_index(c("0", "1", "2", "1"))
+#' @section AI use:
+#' The helper that creates the rate matrix was created with GitHub Copilot's
+#' assistance; the original source does not name the model. The rest of the
+#' function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 rate_index <- function(char, model="ER"){
 states <- get_states(char)

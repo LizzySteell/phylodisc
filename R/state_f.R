@@ -12,6 +12,10 @@
 #'
 #' @param data Character matrix with taxa as rows and characters as columns.
 #' @return A named numeric vector of proportions, named by number of states.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 state_f <- function(data){
 	#data - matrix array character taxon matrix

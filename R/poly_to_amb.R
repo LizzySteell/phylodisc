@@ -11,6 +11,10 @@
 #' @return The matrix with polymorphic scores replaced by `?`.
 #' @examples
 #' poly_to_amb(matrix(c("0", "(01)", "{12}", "1"), ncol = 1))
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 poly_to_amb <- function(matrix){
 	

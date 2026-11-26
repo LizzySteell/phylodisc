@@ -22,6 +22,10 @@
 #' @param data Character matrix with taxa as rows and characters as columns.
 #' @return A matrix with one row per possible score and one column per state.
 #' @seealso [morph_phydat()]
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 contrast_matrix <- function(data) {
   # Change all '-' values to '?'

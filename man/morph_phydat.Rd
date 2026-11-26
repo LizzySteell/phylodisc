@@ -18,3 +18,10 @@ Wrapper for \code{\link[phangorn:as.phyDat]{phangorn::phyDat()}} that converts g
 uncertainties to polymorphisms, and builds the contrast matrix with
 \code{\link[=contrast_matrix]{contrast_matrix()}}.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

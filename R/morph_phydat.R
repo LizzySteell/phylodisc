@@ -19,6 +19,10 @@
 #' @param matrix Character matrix with taxa as rows and characters as columns.
 #'   Polymorphisms and uncertainties in round or curly brackets.
 #' @return A `phyDat` object.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 morph_phydat <- function(matrix){
 	

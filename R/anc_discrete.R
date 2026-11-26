@@ -32,6 +32,12 @@
 #' @return A list with `anc_states`, a matrix of most likely states per
 #'   internal node (ape node numbering), and `stats`, a data frame of log
 #'   likelihood, AIC and AICc per character.
+#' @section AI use:
+#' The function was written by the package author. GitHub Copilot assisted
+#' with editing the code for smoother running; the original source marks
+#' these places 'MODIFIED' and does not name the model. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 anc_discrete <- function(matrix, tree, model="ER", ord=NULL){
 	

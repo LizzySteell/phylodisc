@@ -25,3 +25,10 @@ Subsets a matrix to chosen taxa, removes invariant characters, adjusts the
 ordered-character vector, builds a cost matrix (only if ordered characters
 are supplied) and optionally prunes a matching tree.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

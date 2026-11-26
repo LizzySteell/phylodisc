@@ -24,6 +24,13 @@ A single numeric value, the HSR.
 Calculates the homoplasy slope ratio of Meier et al. (1991), or the
 modified version (HSRm) described in Steell et al. (2025).
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \references{
 Meier R, Kores P, Darwin S (1991) Systematic Biology
 40(1):74-88. Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of

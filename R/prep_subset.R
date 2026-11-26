@@ -22,6 +22,10 @@
 #' @return A list with `matrix`, `ord`, `cost`, `tree` (the last three `NULL`
 #'   when not applicable) and `removed` (original indices of removed
 #'   characters).
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 prep_subset <- function(matrix, taxa, ord = NULL, tree = NULL){
 

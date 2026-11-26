@@ -26,6 +26,14 @@
 #'   scores: `"NaN"` (default), `"median"` (replace with the median distance)
 #'   or `"empirical"` (sample from the calculated distances).
 #' @return A square distance matrix with taxon names as dimnames.
+#' @section AI use:
+#' Three internal helpers were assisted by GitHub Copilot (GPT-4.1): parsing
+#' polymorphisms coded within round brackets, the custom ordered distance
+#' for polymorphisms (minimum pairwise distance), and the custom unordered
+#' (Gower) distance for polymorphisms (minimum, i.e. 0 if any states
+#' overlap between taxon pairs). The rest of the function code was written
+#' by the package author. The roxygen documentation and the snake_case name
+#' were produced with GitHub Copilot (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 phylo_gdist <- function(matrix, ord=NULL, incompat_handling=NULL){
 	

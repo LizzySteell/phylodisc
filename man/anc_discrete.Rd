@@ -30,3 +30,12 @@ zero-length branches) and no invariant characters (see \code{\link[=remove_invar
 Uncertainties in curly braces must be converted first
 (\code{\link[=uncert_to_poly]{uncert_to_poly()}}, \code{\link[=uncert_to_amb]{uncert_to_amb()}}).
 }
+\section{AI use}{
+
+The function was written by the package author. GitHub Copilot assisted
+with editing the code for smoother running; the original source marks
+these places 'MODIFIED' and does not name the model. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

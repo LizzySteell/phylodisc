@@ -15,6 +15,14 @@
 #' @examples
 #' bins <- list(bins = list(low = c(1, 2, 3), high = c(4, 5)))
 #' mrbayes_partition_block(bins)
+#' @section AI use:
+#' Written with GitHub Copilot (GPT-4.1) on 27 October 2025. The prompt was
+#' to 'write a function that creates a MrBayes partition block from the
+#' output from phylodisc::homoplasy_bin()', with a sample partition block
+#' pasted in. The author then edited the function manually so that the
+#' output code was concatenated. The roxygen documentation and the
+#' snake_case name were produced with GitHub Copilot (Claude Sonnet 5.5);
+#' see `AI_USE.md`.
 #' @export
 mrbayes_partition_block <- function(homoplasy_bins, partition_name = "homoplasy") {
   bins <- homoplasy_bins$bins

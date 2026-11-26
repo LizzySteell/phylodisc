@@ -23,3 +23,14 @@ Computes Gower distances (MORD) between taxa, ignoring missing data and
 gaps, with support for polymorphisms and ordered characters. Invariant
 characters should be removed first (\code{\link[=remove_invar]{remove_invar()}}).
 }
+\section{AI use}{
+
+Three internal helpers were assisted by GitHub Copilot (GPT-4.1): parsing
+polymorphisms coded within round brackets, the custom ordered distance
+for polymorphisms (minimum pairwise distance), and the custom unordered
+(Gower) distance for polymorphisms (minimum, i.e. 0 if any states
+overlap between taxon pairs). The rest of the function code was written
+by the package author. The roxygen documentation and the snake_case name
+were produced with GitHub Copilot (Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

@@ -5,6 +5,9 @@
 #'
 #' @param ... Arguments passed to the new function.
 #' @return The same value as the new function.
+#' @section AI use:
+#' These wrappers were written with GitHub Copilot (Claude Sonnet 5.5); see
+#' `AI_USE.md`.
 #' @name phylodisc-deprecated
 #' @keywords internal
 NULL

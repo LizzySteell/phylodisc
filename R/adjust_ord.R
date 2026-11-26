@@ -21,6 +21,10 @@
 #'   the remainder shifted to the new numbering.
 #' @examples
 #' adjust_ord(c(2, 5, 8), exclude = c(1, 5))
+#' @section AI use:
+#' Created with help from GitHub Copilot (GPT-5 mini), October 2025. The
+#' roxygen documentation and the snake_case name were produced with GitHub
+#' Copilot (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 adjust_ord <- function(ord, exclude = integer(0)) {
   ord <- as.integer(ord)

@@ -19,6 +19,13 @@ the remainder shifted to the new numbering.
 Renumbers a vector of ordered characters after other characters have been
 excluded from the matrix, e.g. by \code{\link[=remove_invar]{remove_invar()}}.
 }
+\section{AI use}{
+
+Created with help from GitHub Copilot (GPT-5 mini), October 2025. The
+roxygen documentation and the snake_case name were produced with GitHub
+Copilot (Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 adjust_ord(c(2, 5, 8), exclude = c(1, 5))
 }

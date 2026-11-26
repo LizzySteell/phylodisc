@@ -20,6 +20,15 @@ Builds the rate index matrix used by \code{corHMM::corHMM()} to specify which
 transitions are allowed in an ordered character: only changes between
 adjacent states. It does not estimate rates.
 }
+\section{AI use}{
+
+The helper that creates the rate matrix was created with GitHub Copilot's
+assistance; the original source does not name the model. The rest of the
+function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 rate_index(c("0", "1", "2", "1"))
 }

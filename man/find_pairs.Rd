@@ -21,6 +21,13 @@ Lists all taxon pairs with their group membership, morphological distance
 and patristic distance, for analyses of constraint through character state
 exhaustion. Written by Neil Brocklehurst and reproduced with permission.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \references{
 Brocklehurst N, Panciroli E, Benevento GL, Benson RB (2021)
 Current Biology 31(13).

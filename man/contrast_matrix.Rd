@@ -17,6 +17,13 @@ Builds the contrast matrix needed to create a \code{phyDat} object with
 \code{\link[phangorn:as.phyDat]{phangorn::phyDat()}}. Gaps are treated as missing data, and uncertainties
 and polymorphisms are treated the same.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \seealso{
 \code{\link[=morph_phydat]{morph_phydat()}}
 }

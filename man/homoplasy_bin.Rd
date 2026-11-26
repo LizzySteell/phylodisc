@@ -43,3 +43,10 @@ same value form a bin if there are enough of them, and the rest are placed
 in range bins. The output can be used to partition a matrix by homoplasy,
 e.g. with \code{\link[=mrbayes_partition_block]{mrbayes_partition_block()}}.
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+

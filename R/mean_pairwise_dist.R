@@ -13,6 +13,10 @@
 #' @param dist A distance matrix.
 #' @param ... Ignored.
 #' @return A single numeric value, or `NA` if fewer than two taxa.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 mean_pairwise_dist <- function(dist, ...) {
   dist <- as.matrix(dist)

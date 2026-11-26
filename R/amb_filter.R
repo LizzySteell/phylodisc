@@ -19,6 +19,10 @@
 #' @return A list with the filtered `matrix`, data frames `excluded_taxa` and
 #'   `excluded_chars` (with proportion missing), and `retained_taxa` and
 #'   `retained_chars`.
+#' @section AI use:
+#' The function code was written by the package author. The roxygen
+#' documentation and the snake_case name were produced with GitHub Copilot
+#' (Claude Sonnet 5.5); see `AI_USE.md`.
 #' @export
 amb_filter <- function(matrix, filter = c("taxa", "characters", "both"),
                         taxon_threshold = 0.5, char_threshold = 0.5,

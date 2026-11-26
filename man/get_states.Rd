@@ -16,6 +16,13 @@ Character vector of states.
 Returns the states present in a character matrix, ignoring missing data
 (\verb{?}), gaps and polymorphisms (round brackets).
 }
+\section{AI use}{
+
+The function code was written by the package author. The roxygen
+documentation and the snake_case name were produced with GitHub Copilot
+(Claude Sonnet 5.5); see \code{AI_USE.md}.
+}
+
 \examples{
 get_states(matrix(c("0", "1", "(01)", "?", "2", "-"), ncol = 1))
 }
