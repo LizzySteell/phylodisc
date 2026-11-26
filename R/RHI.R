@@ -15,7 +15,7 @@
 #' tree, or on a set of trees. Supports polymorphisms, ambiguities and ordered
 #' characters, and can return per-character values.
 #'
-#' @param data A `phyDat` object (see [morph.phydat()]) or a character matrix
+#' @param data A `phyDat` object (see [morph_phydat()]) or a character matrix
 #'   with taxa as rows and characters as columns.
 #' @param tree A `phylo` tree, or a `multiPhylo` object / list of trees (in which
 #'   case trees are detected automatically).
@@ -24,7 +24,7 @@
 #' @param ordered Optional numeric vector of indices (or character vector of
 #'   column names) of ordered characters.
 #' @param cost Optional cost matrix for ordered characters (see
-#'   [cost.matrix()]). Do not supply when `per.char = TRUE`.
+#'   [cost_matrix()]). Do not supply when `per.char = TRUE`.
 #' @param per.char Logical. If `TRUE`, return RHI for each character.
 #' @return For a single tree, a named numeric vector containing the 5% quantile,
 #'   central RHI, 95% quantile, tree length and minimum length. With
@@ -37,10 +37,10 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
   # Dependencies
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
   if(!requireNamespace("ape", quietly = TRUE)) stop("ape package required.")
-  if(!exists("get.states", mode = "function")) stop("get.states() not found.")
-  if(!exists("statef", mode = "function")) stop("statef() not found.")
-  morph_phydat_available <- exists("morph.phydat", mode = "function")
-  cost_matrix_available <- exists("cost.matrix", mode = "function")
+  if(!exists("get_states", mode = "function")) stop("get_states() not found.")
+  if(!exists("state_f", mode = "function")) stop("state_f() not found.")
+  morph_phydat_available <- exists("morph_phydat", mode = "function")
+  cost_matrix_available <- exists("cost_matrix", mode = "function")
   uncert_to_poly_available <- exists("uncert.to.poly", mode = "function")
   uncert_to_amb_available <- exists("uncert.to.amb", mode = "function")
 
@@ -55,8 +55,8 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     if(any(grepl("\\{[^}]+\\}", mat, perl = TRUE))){
       msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
       msg <- paste0(msg, "Please preprocess your data before calling RHI. Two common options:\n\n")
-      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
-      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n   phydat  <- morph.phydat(matrix2)\n   RHI(phydat, tree, n)\n")
+      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert.to.poly(matrix)\n   phydat  <- morph_phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
+      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert.to.amb(matrix)\n   phydat  <- morph_phydat(matrix2)\n   RHI(phydat, tree, n)\n")
       stop(msg)
     }
     data_phyDat <- NULL
@@ -80,8 +80,8 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
 
   # 3. Prepare phyDat
   if(is.null(data_phyDat)){
-    if(!morph_phydat_available) stop("morph.phydat() not found.")
-    data_phyDat <- morph.phydat(mat)
+    if(!morph_phydat_available) stop("morph_phydat() not found.")
+    data_phyDat <- morph_phydat(mat)
   }
   nchar <- ncol(mat)
 
@@ -107,7 +107,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
   # 5. Precompute cost matrix
   default_cost_matrix <- NULL
   if(is.null(cost) && length(ordered_idx) > 0 && cost_matrix_available){
-    default_cost_matrix <- cost.matrix(mat)
+    default_cost_matrix <- cost_matrix(mat)
   }
 
   # Helper: randomize tips
@@ -123,7 +123,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     nchar_local <- ncol(matrix_data)
     lmin_chars <- integer(nchar_local)
     for(k in seq_len(nchar_local)){
-      states_k <- get.states(matrix_data[, k, drop = FALSE])
+      states_k <- get_states(matrix_data[, k, drop = FALSE])
       lmin_chars[k] <- length(states_k) - 1
     }
     return(lmin_chars)
@@ -148,10 +148,10 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
 
     null_tlengths_char <- vector("list", nchar_local)
     for(m in seq_len(nchar_local)){
-      states_m <- get.states(matrix_data[, m])
+      states_m <- get_states(matrix_data[, m])
       nstates <- length(states_m)
       if((m %in% ordered_idx_local) && nstates > 1){
-        cost_m <- if(!is.null(cost)) cost else cost.matrix(states_m)
+        cost_m <- if(!is.null(cost)) cost else cost_matrix(states_m)
         null_tlengths_char[[m]] <- unlist(lapply(random_trees, function(rt){
           phangorn::parsimony(rt, char_phy_list[[m]], method = "sankoff", cost = cost_m)
         }))
@@ -166,10 +166,10 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
 
     char_lengths <- numeric(nchar_local)
     for(b in seq_len(nchar_local)){
-      states_b <- get.states(matrix_data[, b])
+      states_b <- get_states(matrix_data[, b])
       nstates_b <- length(states_b)
       if((b %in% ordered_idx_local) && nstates_b > 1){
-        cost_b <- if(!is.null(cost)) cost else cost.matrix(states_b)
+        cost_b <- if(!is.null(cost)) cost else cost_matrix(states_b)
         char_lengths[b] <- phangorn::parsimony(tr, char_phy_list[[b]], method = "sankoff", cost = cost_b)
       } else {
         char_lengths[b] <- phangorn::parsimony(tr, char_phy_list[[b]])
@@ -202,8 +202,8 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
         cost_used <- cost
       } else {
         if(is.null(default_cost_matrix)){
-          if(!cost_matrix_available) stop("Ordered characters requested but cost.matrix() not available and no 'cost' supplied.")
-          default_cost_matrix <- cost.matrix(matrix_data)
+          if(!cost_matrix_available) stop("Ordered characters requested but cost_matrix() not available and no 'cost' supplied.")
+          default_cost_matrix <- cost_matrix(matrix_data)
         }
         cost_used <- default_cost_matrix
       }
@@ -228,7 +228,7 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
       L <- phangorn::parsimony(tr, phyDat_obj)
     } else {
       if(!exists("cost_used")){
-        if(is.null(default_cost_matrix) && !cost_matrix_available) stop("Ordered characters requested but cost.matrix() not available and no 'cost' supplied.")
+        if(is.null(default_cost_matrix) && !cost_matrix_available) stop("Ordered characters requested but cost_matrix() not available and no 'cost' supplied.")
         cost_used <- default_cost_matrix
       }
       ord_phy <- phyDat_obj[, ordered_idx_local, drop = FALSE]

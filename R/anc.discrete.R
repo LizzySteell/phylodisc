@@ -37,7 +37,7 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	
 	# Dependencies
 	if(!requireNamespace("corHMM", quietly = TRUE)) stop("corHMM package required.")
-	if(!exists("get.states", mode = "function")) stop("get.states() not found.")
+	if(!exists("get_states", mode = "function")) stop("get_states() not found.")
 	if(!exists("rate.index", mode = "function")) stop("rate.index() not found.")
 
 	# Tell user to convert all uncertainties to polymorphisms or ambiguities in preprocessing.

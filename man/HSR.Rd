@@ -7,7 +7,7 @@
 HSR(data, tree, n, modified = TRUE)
 }
 \arguments{
-\item{data}{A \code{phyDat} object, e.g. from \code{\link[=morph.phydat]{morph.phydat()}}.}
+\item{data}{A \code{phyDat} object, e.g. from \code{\link[=morph_phydat]{morph_phydat()}}.}
 
 \item{tree}{A tree of class \code{phylo}.}
 

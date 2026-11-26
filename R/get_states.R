@@ -1,6 +1,6 @@
 ### 2024-02-08
 
-### Function 'get.states()'
+### Function 'get_states()'
 
 ### To get charater states from a phylogenetic matrix. Ignores polymorphisms (round brackets only), gaps and '?'
 
@@ -13,9 +13,9 @@
 #' @param data Character matrix.
 #' @return Character vector of states.
 #' @examples
-#' get.states(matrix(c("0", "1", "(01)", "?", "2", "-"), ncol = 1))
+#' get_states(matrix(c("0", "1", "(01)", "?", "2", "-"), ncol = 1))
 #' @export
-get.states <- function(data) {
+get_states <- function(data) {
 	
 	#data - matrix array of phylogenetic dataset
 		

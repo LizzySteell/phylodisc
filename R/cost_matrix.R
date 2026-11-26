@@ -14,9 +14,9 @@
 #' @return A square numeric matrix of state-change costs.
 #' @examples
 #' m <- matrix(c("0", "1", "2", "1"), ncol = 1)
-#' cost.matrix(m)
+#' cost_matrix(m)
 #' @export
-cost.matrix <- function(data)
+cost_matrix <- function(data)
 
 # data - Phylogenetic matrix (in simple matrix array format) where row names are taxa and columns are characters. Gaps ('-') are treated as ambiguities ('?')
 
@@ -26,7 +26,7 @@ cost.matrix <- function(data)
 	 	
 	 	#get character states
 	 	
-	 	states <- get.states(data)
+	 	states <- get_states(data)
 	 	
 	 	matrix <- matrix(nrow=length(states), ncol=length(states))
 	 	

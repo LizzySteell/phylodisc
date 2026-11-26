@@ -14,7 +14,7 @@
 #' Calculates the homoplasy slope ratio of Meier et al. (1991), or the
 #' modified version (HSRm) described in Steell et al. (2025).
 #'
-#' @param data A `phyDat` object, e.g. from [morph.phydat()].
+#' @param data A `phyDat` object, e.g. from [morph_phydat()].
 #' @param tree A tree of class `phylo`.
 #' @param n Number of randomised matrices.
 #' @param modified Logical. If `TRUE`, random matrices retain the missing data
@@ -27,7 +27,7 @@
 #' @export
 HSR <- function(data, tree, n, modified=TRUE){
 	
-	# data - matrix of morphological data in phydat format (using morph.phydat)
+	# data - matrix of morphological data in phydat format (using morph_phydat)
 	# tree - a phylogenetic tree of class 'phylo'
 	# n - number of permutations of the matrix
 	# modified - modified = TRUE indicates that the modified homoplasy slope ratio (HSRm; refer to manuscript) should be calculated or not. It refers to whether the 'noise' of an empirical matrix should be retained for the randomised matrices, which would include polymorphic states and missing data. If set to FALSE, the randomised matrices are generated 'without noise' so that they comprise only the actual character states for each character (no missing data, no polymorphisms), and are calculated in the way that the original HSR metric was designed for.
@@ -60,7 +60,7 @@ HSR <- function(data, tree, n, modified=TRUE){
 		#If modified=FALSE then function excludes missing data and other non-state scorings (polymorphisms) (hereby called 'noise')
 	
 	#Get states per character
-	states <- apply(matrix, 2, get.states, simplify=FALSE)
+	states <- apply(matrix, 2, get_states, simplify=FALSE)
 	
 	# Generate random matrices
 	
@@ -87,7 +87,7 @@ HSR <- function(data, tree, n, modified=TRUE){
 	}
 	
 	# Create morphological phydats for each random matrix
-	random_phydats <- lapply(random_matrices, morph.phydat)
+	random_phydats <- lapply(random_matrices, morph_phydat)
 	
 	# Calculate ES for random matrices
 	ES_random <- unlist(lapply(random_phydats, extra_steps, tree))

@@ -98,7 +98,7 @@ phylo.gdist <- function(matrix, ord=NULL, incompat_handling=NULL){
 	parsed_indices <- matrix(vector("list", n * p), nrow = n, ncol = p)
 	if (!is.null(ord)) {
 		for (i in ord) {
-			levels <- get.states(df[, i]) # use phylodisc function get.states
+			levels <- get_states(df[, i]) # use phylodisc function get_states
 			ordered_levels_list[[as.character(i)]] <- levels
 			for (row in 1:n) {
 				states <- parsed_states[[row, i]]

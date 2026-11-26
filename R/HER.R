@@ -14,7 +14,7 @@
 #' across taxa and searching for minimum-length trees with
 #' [phangorn::pratchet()].
 #'
-#' @param data A `phyDat` object, e.g. from [morph.phydat()].
+#' @param data A `phyDat` object, e.g. from [morph_phydat()].
 #' @param tree A tree of class `phylo`.
 #' @param n Number of permuted matrices.
 #' @param maxit,minit,k Maximum and minimum iterations, and number of rounds
@@ -26,7 +26,7 @@
 #' @export
 HER <- function(data, tree, n, maxit=500, minit=50, k=10){
 	
-	# data - matrix of morphological data in phydat format (using morph.phydat)
+	# data - matrix of morphological data in phydat format (using morph_phydat)
 	# tree - a phylogenetic tree of class 'phylo'
 	# n - number of permutations of the matrix
 	# maxit - max number of iterations in parsimony ratchet
@@ -49,7 +49,7 @@ HER <- function(data, tree, n, maxit=500, minit=50, k=10){
 	
 	# Create morphological phydats for each random matrix
 	
-	random_phydats <- lapply(random_matrices, morph.phydat)
+	random_phydats <- lapply(random_matrices, morph_phydat)
 	
 	# Estimate minimum length trees from the random datasets using parsimony
 	
@@ -57,10 +57,10 @@ HER <- function(data, tree, n, maxit=500, minit=50, k=10){
 	
 	# Calculate lmin for matrix
 	
-	states <- get.states(matrix)
+	states <- get_states(matrix)
 	 
 	#State frequencies
-	f <- statef(matrix)
+	f <- state_f(matrix)
 
 	#lmin is theoretical minimum tree length
 	lmin <- c()

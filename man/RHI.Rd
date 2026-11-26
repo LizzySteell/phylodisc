@@ -15,7 +15,7 @@ RHI(
 )
 }
 \arguments{
-\item{data}{A \code{phyDat} object (see \code{\link[=morph.phydat]{morph.phydat()}}) or a character matrix
+\item{data}{A \code{phyDat} object (see \code{\link[=morph_phydat]{morph_phydat()}}) or a character matrix
 with taxa as rows and characters as columns.}
 
 \item{tree}{A \code{phylo} tree, or a \code{multiPhylo} object / list of trees (in which
@@ -29,7 +29,7 @@ case trees are detected automatically).}
 column names) of ordered characters.}
 
 \item{cost}{Optional cost matrix for ordered characters (see
-\code{\link[=cost.matrix]{cost.matrix()}}). Do not supply when \code{per.char = TRUE}.}
+\code{\link[=cost_matrix]{cost_matrix()}}). Do not supply when \code{per.char = TRUE}.}
 
 \item{per.char}{Logical. If \code{TRUE}, return RHI for each character.}
 }

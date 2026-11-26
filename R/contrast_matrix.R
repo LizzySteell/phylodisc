@@ -21,9 +21,9 @@
 #'
 #' @param data Character matrix with taxa as rows and characters as columns.
 #' @return A matrix with one row per possible score and one column per state.
-#' @seealso [morph.phydat()]
+#' @seealso [morph_phydat()]
 #' @export
-contrast.matrix <- function(data) {
+contrast_matrix <- function(data) {
   # Change all '-' values to '?'
   data[data == '-'] <- '?'
   

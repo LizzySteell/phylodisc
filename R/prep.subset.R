@@ -7,7 +7,7 @@
 ### all in one step. Useful for running the same pipeline across multiple matrices (e.g. full, cranial,
 ### postcranial) and multiple taxonomic subsets without repeating the same lines of code each time.
 
-### Dependencies: remove.invar(), adjust.ord(), cost.matrix() (all from phylodisc); keep.tip() (from ape, only if tree is supplied)
+### Dependencies: remove.invar(), adjust.ord(), cost_matrix() (all from phylodisc); keep.tip() (from ape, only if tree is supplied)
 
 #' Prepare a taxon subset of a matrix in one step
 #'
@@ -51,7 +51,7 @@ prep.subset <- function(matrix, taxa, ord = NULL, tree = NULL){
 	# 4. Generate a cost matrix from the trimmed matrix, only if ordered characters are supplied
 	cost_new <- NULL
 	if (!is.null(ord)) {
-		cost_new <- cost.matrix(matrix_new)
+		cost_new <- cost_matrix(matrix_new)
 	}
 
 	# 5. Prune the tree to the same taxa, if supplied

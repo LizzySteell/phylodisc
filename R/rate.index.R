@@ -1,6 +1,6 @@
 ##### 29-Oct-2025 rate.matrix() V1.0
 
-### Rate index matrix builder for use in corHMM functions when a matrix for the rate category needs to be specified. This uses the phylodisc::get.states function.
+### Rate index matrix builder for use in corHMM functions when a matrix for the rate category needs to be specified. This uses the phylodisc::get_states function.
 ### char: a single discrete character from a character taxon matrix, in matrix format.
 ### model: either the equal rates ("ER") or symmetric ("SYM") models of multistate character evolution.
 ### Notes: This function is intended to create rate matrices that specify the nature of character state transitions in an ordered multistate character.
@@ -23,7 +23,7 @@
 #' rate.index(c("0", "1", "2", "1"))
 #' @export
 rate.index <- function(char, model="ER"){
-states <- get.states(char)
+states <- get_states(char)
 names(states) <- c(1:length(states))
 n <- length(states)
 
