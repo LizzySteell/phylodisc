@@ -13,6 +13,8 @@
 #' @param dist A distance matrix.
 #' @param ... Ignored.
 #' @return A single numeric value, or `NA` if fewer than two taxa.
+#' @references Guillerme T (2018) dispRity: a modular R package for measuring
+#'   disparity. Methods in Ecology and Evolution 9(7):1755-1763.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot

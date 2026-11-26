@@ -34,3 +34,7 @@ by the package author. The roxygen documentation and the snake_case name
 were produced with GitHub Copilot (Claude Sonnet 5.5); see \code{AI_USE.md}.
 }
 
+\references{
+Gower JC (1971) A general coefficient of similarity and some of
+its properties. Biometrics 27(4):857-871.
+}

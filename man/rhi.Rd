@@ -59,6 +59,13 @@ and the snake_case name were produced with GitHub Copilot (Claude Sonnet
 }
 
 \references{
-Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the
-Linnean Society 204(1):zlaf024.
+Steell EM, Hsiang AY, Field DJ (2025) Revealing patterns of
+homoplasy in discrete phylogenetic datasets with a cross-comparable index.
+Zoological Journal of the Linnean Society 204(1):zlaf024.
+
+Schliep KP (2011) phangorn: phylogenetic analysis in R. Bioinformatics
+27(4):592-593.
+
+Sankoff D, Rousseau P (1975) Locating the vertices of a Steiner tree in
+an arbitrary metric space. Mathematical Programming 9:240-246.
 }

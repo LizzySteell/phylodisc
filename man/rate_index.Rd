@@ -32,3 +32,13 @@ documentation and the snake_case name were produced with GitHub Copilot
 \examples{
 rate_index(c("0", "1", "2", "1"))
 }
+\references{
+Beaulieu JM, O'Meara BC, Donoghue MJ (2013) Identifying hidden
+rate changes in the evolution of a binary morphological character: the
+evolution of plant habit in campanulid angiosperms. Systematic Biology
+62(5):725-737.
+
+Boyko JD, Beaulieu JM (2021) Generalized hidden Markov models for
+phylogenetic comparative datasets. Methods in Ecology and Evolution
+12(3):468-478.
+}

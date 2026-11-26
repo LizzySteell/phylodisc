@@ -26,6 +26,8 @@
 #'   scores: `"NaN"` (default), `"median"` (replace with the median distance)
 #'   or `"empirical"` (sample from the calculated distances).
 #' @return A square distance matrix with taxon names as dimnames.
+#' @references Gower JC (1971) A general coefficient of similarity and some of
+#'   its properties. Biometrics 27(4):857-871.
 #' @section AI use:
 #' Three internal helpers were assisted by GitHub Copilot (GPT-4.1): parsing
 #' polymorphisms coded within round brackets, the custom ordered distance

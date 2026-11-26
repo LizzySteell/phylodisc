@@ -32,6 +32,14 @@
 #' @return A list with `anc_states`, a matrix of most likely states per
 #'   internal node (ape node numbering), and `stats`, a data frame of log
 #'   likelihood, AIC and AICc per character.
+#' @references Beaulieu JM, O'Meara BC, Donoghue MJ (2013) Identifying hidden
+#'   rate changes in the evolution of a binary morphological character: the
+#'   evolution of plant habit in campanulid angiosperms. Systematic Biology
+#'   62(5):725-737.
+#'
+#'   Boyko JD, Beaulieu JM (2021) Generalized hidden Markov models for
+#'   phylogenetic comparative datasets. Methods in Ecology and Evolution
+#'   12(3):468-478.
 #' @section AI use:
 #' The function was written by the package author. GitHub Copilot assisted
 #' with editing the code for smoother running; the original source marks

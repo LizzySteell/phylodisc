@@ -15,6 +15,10 @@
 #' @examples
 #' bins <- list(bins = list(low = c(1, 2, 3), high = c(4, 5)))
 #' mrbayes_partition_block(bins)
+#' @references Ronquist F, Teslenko M, van der Mark P, Ayres DL, Darling A,
+#'   Hohna S, Larget B, Liu L, Suchard MA, Huelsenbeck JP (2012) MrBayes 3.2:
+#'   efficient Bayesian phylogenetic inference and model choice across a large
+#'   model space. Systematic Biology 61(3):539-542.
 #' @section AI use:
 #' Written with GitHub Copilot (GPT-4.1) on 27 October 2025. The prompt was
 #' to 'write a function that creates a MrBayes partition block from the

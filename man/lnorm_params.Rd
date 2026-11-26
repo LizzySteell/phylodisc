@@ -28,3 +28,18 @@ documentation and the snake_case name were produced with GitHub Copilot
 (Claude Sonnet 5.5); see \code{AI_USE.md}.
 }
 
+\references{
+Pennell MW, Eastman JM, Slater GJ, Brown JW, Uyeda JC,
+FitzJohn RG, Alfaro ME, Harmon LJ (2014) geiger v2.0: an expanded suite of
+methods for fitting macroevolutionary models to phylogenetic trees.
+Bioinformatics 30(15):2216-2218.
+
+Delignette-Muller ML, Dutang C (2015) fitdistrplus: an R package for
+fitting distributions. Journal of Statistical Software 64(4):1-34.
+
+Smith MR (2019) TreeTools: create, modify and analyze phylogenetic trees.
+Comprehensive R Archive Network. \doi{10.5281/zenodo.3522725}
+
+Guillerme T (2018) dispRity: a modular R package for measuring disparity.
+Methods in Ecology and Evolution 9(7):1755-1763.
+}

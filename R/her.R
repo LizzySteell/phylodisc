@@ -20,9 +20,19 @@
 #' @param maxit,minit,k Maximum and minimum iterations, and number of rounds
 #'   without improvement before stopping, passed to the parsimony ratchet.
 #' @return A single numeric value, the HER.
-#' @references Archie JW (1989) Systematic Zoology 38(3):253-269.
-#'   Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the Linnean
-#'   Society 204(1):zlaf024.
+#' @references Archie JW (1989) Homoplasy excess ratios: new indices for
+#'   measuring levels of homoplasy in phylogenetic systematics and a critique
+#'   of the consistency index. Systematic Zoology 38(3):253-269.
+#'
+#'   Steell EM, Hsiang AY, Field DJ (2025) Revealing patterns of homoplasy in
+#'   discrete phylogenetic datasets with a cross-comparable index. Zoological
+#'   Journal of the Linnean Society 204(1):zlaf024.
+#'
+#'   Nixon KC (1999) The parsimony ratchet, a new method for rapid parsimony
+#'   analysis. Cladistics 15(4):407-414.
+#'
+#'   Schliep KP (2011) phangorn: phylogenetic analysis in R. Bioinformatics
+#'   27(4):592-593.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot

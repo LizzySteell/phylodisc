@@ -30,5 +30,14 @@ documentation and the snake_case name were produced with GitHub Copilot
 
 \references{
 Brocklehurst N, Panciroli E, Benevento GL, Benson RB (2021)
-Current Biology 31(13).
+Mammaliaform extinctions as a driver of the morphological radiation of
+Cenozoic mammals. Current Biology 31(13):2955-2963.
+
+Brocklehurst N, Ford DP, Benson RB (2022) Early origins of divergent
+patterns of morphological evolution on the mammal and reptile
+stem-lineages. Systematic Biology 71(5):1195-1209.
+
+Brocklehurst N, Benson RJ (2021) Multiple paths to morphological
+diversification during the origin of amniotes. Nature Ecology & Evolution
+5(9):1243-1249.
 }

@@ -32,3 +32,7 @@ documentation and the snake_case name were produced with GitHub Copilot
 (Claude Sonnet 5.5); see \code{AI_USE.md}.
 }
 
+\references{
+Paradis E, Schliep K (2019) ape 5.0: an environment for modern
+phylogenetics and evolutionary analyses in R. Bioinformatics 35:526-528.
+}

@@ -32,7 +32,14 @@ documentation and the snake_case name were produced with GitHub Copilot
 }
 
 \references{
-Meier R, Kores P, Darwin S (1991) Systematic Biology
-40(1):74-88. Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of
-the Linnean Society 204(1):zlaf024.
+Meier R, Kores P, Darwin S (1991) Homoplasy slope ratio: a
+better measurement of observed homoplasy in cladistic analyses.
+Systematic Zoology 40(1):74-88.
+
+Steell EM, Hsiang AY, Field DJ (2025) Revealing patterns of homoplasy in
+discrete phylogenetic datasets with a cross-comparable index. Zoological
+Journal of the Linnean Society 204(1):zlaf024.
+
+Schliep KP (2011) phangorn: phylogenetic analysis in R. Bioinformatics
+27(4):592-593.
 }

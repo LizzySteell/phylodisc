@@ -25,3 +25,7 @@ documentation and the snake_case name were produced with GitHub Copilot
 (Claude Sonnet 5.5); see \code{AI_USE.md}.
 }
 
+\references{
+Guillerme T (2018) dispRity: a modular R package for measuring
+disparity. Methods in Ecology and Evolution 9(7):1755-1763.
+}

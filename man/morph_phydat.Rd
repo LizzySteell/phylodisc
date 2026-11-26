@@ -25,3 +25,7 @@ documentation and the snake_case name were produced with GitHub Copilot
 (Claude Sonnet 5.5); see \code{AI_USE.md}.
 }
 
+\references{
+Schliep KP (2011) phangorn: phylogenetic analysis in R.
+Bioinformatics 27(4):592-593.
+}

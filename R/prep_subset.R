@@ -22,6 +22,8 @@
 #' @return A list with `matrix`, `ord`, `cost`, `tree` (the last three `NULL`
 #'   when not applicable) and `removed` (original indices of removed
 #'   characters).
+#' @references Paradis E, Schliep K (2019) ape 5.0: an environment for modern
+#'   phylogenetics and evolutionary analyses in R. Bioinformatics 35:526-528.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot

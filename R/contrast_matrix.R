@@ -22,6 +22,8 @@
 #' @param data Character matrix with taxa as rows and characters as columns.
 #' @return A matrix with one row per possible score and one column per state.
 #' @seealso [morph_phydat()]
+#' @references Schliep KP (2011) phangorn: phylogenetic analysis in R.
+#'   Bioinformatics 27(4):592-593.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot
