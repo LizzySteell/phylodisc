@@ -41,4 +41,4 @@ Steell EM, Hsiang AY, Field DJ, Revealing patterns of homoplasy in discrete phyl
 
 ## License
 
-GNU V3 — see LICENSE file.
+phylodisc is free software, released under the GNU General Public License, version 3 or (at your option) any later version (GPL-3.0-or-later). See the [LICENSE](LICENSE) file.
