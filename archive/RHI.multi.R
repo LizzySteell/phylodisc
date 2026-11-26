@@ -21,7 +21,7 @@
 #' @param n Number of randomisations.
 #' @param ord,cost Currently not passed on to [RHI()].
 #' @return Median, 5% and 95% quantiles of RHI and the median tree length.
-#' @export
+# (archived: superseded by RHI())
 RHI.multi <- function(data, trees, n, ord=NULL, cost=NULL){ 
 	
 	### 

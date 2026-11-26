@@ -3,8 +3,6 @@
 export(HER)
 export(HSR)
 export(RHI)
-export(RHI.char)
-export(RHI.multi)
 export(adjust.ord)
 export(amb.filter)
 export(anc.discrete)

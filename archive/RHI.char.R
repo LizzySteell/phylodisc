@@ -20,7 +20,7 @@
 #' @param ordered Optional numeric vector of indices (or character vector of
 #'   column names) of ordered characters.
 #' @return A named numeric vector of RHI values, one per character.
-#' @export
+# (archived: superseded by RHI())
 RHI.char <- function(data, tree, n = 100, ordered = NULL){
 
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
