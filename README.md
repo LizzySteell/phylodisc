@@ -35,8 +35,6 @@ Schliep K.P. 2011. phangorn: phylogenetic analysis in R. Bioinformatics, 27(4) 5
 
 Schliep, K., Potts, A. J., Morrison, D. A., Grimm, G. W. (2017), Intertwining phylogenetic trees and networks. Methods in Ecology and Evolution, 8: 1212--1220. doi: 10.1111/2041-210X.12760
 
-Revell, L. J. (2024) phytools 2.0: an updated R ecosystem for phylogenetic comparative methods (and other things). PeerJ, 12, e16505.
-
 Steell EM, Hsiang AY, Field DJ, Revealing patterns of homoplasy in discrete phylogenetic datasets with a cross-comparable index, Zoological Journal of the Linnean Society, Volume 204, Issue 1, May 2025, zlaf024, https://doi.org/10.1093/zoolinnean/zlaf024
 
 Archie JW (1989) Homoplasy excess ratios: new indices for measuring levels of homoplasy in phylogenetic systematics and a critique of the consistency index. Systematic Zoology 38(3):253-269.
@@ -56,6 +54,8 @@ Gower JC (1971) A general coefficient of similarity and some of its properties. 
 Guillerme T (2018) dispRity: a modular R package for measuring disparity. Methods in Ecology and Evolution 9(7):1755-1763.
 
 Meier R, Kores P, Darwin S (1991) Homoplasy slope ratio: a better measurement of observed homoplasy in cladistic analyses. Systematic Zoology 40(1):74-88.
+
+Lloyd GT (2016) Estimating morphological diversity and tempo with discrete character-taxon matrices: implementation, challenges, progress, and recommendations. Paleobiology 42(1):11-29.
 
 Nixon KC (1999) The parsimony ratchet, a new method for rapid parsimony analysis. Cladistics 15(4):407-414.
 

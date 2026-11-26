@@ -37,4 +37,8 @@ were produced with GitHub Copilot (Claude Sonnet 5.5); see \code{AI_USE.md}.
 \references{
 Gower JC (1971) A general coefficient of similarity and some of
 its properties. Biometrics 27(4):857-871.
+
+Lloyd GT (2016) Estimating morphological diversity and tempo with
+discrete character-taxon matrices: implementation, challenges, progress,
+and recommendations. Paleobiology 42(1):11-29.
 }

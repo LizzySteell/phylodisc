@@ -15,6 +15,10 @@
 #' @return A single numeric value, or `NA` if fewer than two taxa.
 #' @references Guillerme T (2018) dispRity: a modular R package for measuring
 #'   disparity. Methods in Ecology and Evolution 9(7):1755-1763.
+#'
+#'   Lloyd GT (2016) Estimating morphological diversity and tempo with
+#'   discrete character-taxon matrices: implementation, challenges, progress,
+#'   and recommendations. Paleobiology 42(1):11-29.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot

@@ -28,6 +28,10 @@
 #' @return A square distance matrix with taxon names as dimnames.
 #' @references Gower JC (1971) A general coefficient of similarity and some of
 #'   its properties. Biometrics 27(4):857-871.
+#'
+#'   Lloyd GT (2016) Estimating morphological diversity and tempo with
+#'   discrete character-taxon matrices: implementation, challenges, progress,
+#'   and recommendations. Paleobiology 42(1):11-29.
 #' @section AI use:
 #' Three internal helpers were assisted by GitHub Copilot (GPT-4.1): parsing
 #' polymorphisms coded within round brackets, the custom ordered distance
