@@ -1,0 +1,145 @@
+---
+title: "A worked workflow with phylodisc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A worked workflow with phylodisc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+```{r libs}
+library(phylodisc)
+library(ape)
+library(phangorn)
+# Used in the examples: dispRity, vegan, phytools, corHMM, geiger,
+# fitdistrplus, TreeTools
+```
+
+# Introduction
+
+<!-- What phylodisc does; how the two examples map onto its functions;
+table of functions by task (cleaning, homoplasy, distances, ancestors,
+ordering, partitioning, simulation). -->
+
+# Example A: a fossil-rich matrix with missing data
+
+<!-- Dataset: TODO (published matrix, mainly fossils; cranial/postcranial or
+two comparable clades). -->
+
+## Load and inspect
+
+```{r a-load}
+# matrix_a <- ...
+# get_states(matrix_a)
+# state_f(matrix_a)
+```
+
+## Clean and convert
+
+```{r a-clean}
+# matrix_a <- remove_invar(matrix_a)
+# phy_a <- morph_phydat(matrix_a)  # builds the contrast matrix
+```
+
+## Trees
+
+```{r a-trees}
+# trees_a <- pratchet(phy_a, all = TRUE)  # multiPhylo
+```
+
+## Homoplasy: RHI, HER and HSR
+
+```{r a-homoplasy}
+# rhi(phy_a, trees_a[[1]])
+# rhi(phy_a, trees_a)
+# her(phy_a, trees_a[[1]], n = 100)
+# hsr(phy_a, trees_a[[1]], n = 100)
+```
+
+## Partitions
+
+```{r a-partitions}
+# sub <- prep_subset(matrix_a, taxa = taxa_subset, tree = trees_a[[1]])
+# compare rhi() across subsets
+```
+
+## Disparity with dispRity
+
+```{r a-disparity}
+# d <- phylo_gdist(matrix_a)
+# mean_pairwise_dist(d)
+# dispRity bootstrapping with mean_pairwise_dist as the metric
+```
+
+## Missing data, ancestral states and ordination
+
+```{r a-ordination}
+# filtered <- amb_filter(matrix_a, filter = "both", ...)
+# tree_len <- acctran(trees_a[[1]], phy_a)  # stepwise branch lengths
+# anc <- anc_discrete(filtered_matrix, tree_len)
+# d <- phylo_gdist(rbind(tips, anc$anc_states),
+#                  incompat_handling = "empirical")
+# NMDS (vegan); phylomorphospace (phytools)
+```
+
+# Example B: an extant-dominated matrix with a molecular topology
+
+<!-- Dataset: TODO (two clades; ordered characters). -->
+
+## Load and prepare
+
+```{r b-prep}
+# tree_b <- multi2di(tree_b)  # if the topology has polytomies
+# prep <- prep_subset(matrix_b, taxa = tree_b$tip.label, ord = ord_b,
+#                     tree = tree_b)  # remove_invar + adjust_ord + cost_matrix
+```
+
+## Branch lengths from morphological steps
+
+```{r b-acctran}
+# tree_b <- acctran(prep$tree, phy_b)
+# Note: acctran uses unordered (Fitch) steps, so branch lengths do not
+# reflect character ordering. Zero-length branches must be handled before
+# lnorm_params().
+```
+
+## Per-character RHI and homoplasy partitions
+
+```{r b-rhi}
+# rhi_pc <- rhi(phy_b, tree_b, per.char = TRUE)
+# bins <- homoplasy_bin(rhi_pc, ...)
+# mrbayes_partition_block(bins)
+```
+
+## Constraint: pairs of taxa
+
+```{r b-pairs}
+# d <- phylo_gdist(prep$matrix, ord = prep$ord)
+# pat <- cophenetic(tree_b)
+# find_pairs(d, groups, pat)
+```
+
+## Null simulation
+
+```{r b-sim}
+# params <- lnorm_params(prep$matrix, tree_b)
+# sims <- dispRity::sim.morpho(...)  # 1000 matrices
+# predictive interval for the empirical value
+```
+
+# Practical notes
+
+<!-- Coding: polymorphisms in (), uncertainties in {}; preprocessing order;
+set.seed(); runtimes of rhi() and her(). -->
+
+# References
+
+<!-- See the package README. -->
+
+```{r session}
+sessionInfo()
+```
