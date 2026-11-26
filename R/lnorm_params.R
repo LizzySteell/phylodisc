@@ -1,6 +1,6 @@
 ### 2026-Mar-25
 
-### lnorm.params V1.0
+### lnorm_params V1.0
 
 ### A function to estimate character state transition rates (using 'fitDiscrete' from geiger) per characters, and estimate
 ### parameters from log normally distributed rates (mean log and sd log) ready for input in whole-matrix simulation using 'sim.morpho' from dispRity.
@@ -26,7 +26,7 @@
 #' @param tree A fully bifurcating `phylo` tree with branch lengths.
 #' @return A list with `mean_log` and `sd_log`. Also plots the fit.
 #' @export
-lnorm.params <- function(matrix, tree){
+lnorm_params <- function(matrix, tree){
 
 tips <- TreeTools::TipLabels(tree)
 data <- matrix

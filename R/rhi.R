@@ -33,7 +33,7 @@
 #' @references Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the
 #'   Linnean Society 204(1):zlaf024.
 #' @export
-RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL, per.char = FALSE){
+rhi <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL, per.char = FALSE){
   # Dependencies
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
   if(!requireNamespace("ape", quietly = TRUE)) stop("ape package required.")
@@ -54,9 +54,9 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
     # Curly-brace uncertainty check
     if(any(grepl("\\{[^}]+\\}", mat, perl = TRUE))){
       msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
-      msg <- paste0(msg, "Please preprocess your data before calling RHI. Two common options:\n\n")
-      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert_to_poly(matrix)\n   phydat  <- morph_phydat(matrix2)\n   RHI(phydat, tree, n)\n\n")
-      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert_to_amb(matrix)\n   phydat  <- morph_phydat(matrix2)\n   RHI(phydat, tree, n)\n")
+      msg <- paste0(msg, "Please preprocess your data before calling rhi. Two common options:\n\n")
+      msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert_to_poly(matrix)\n   phydat  <- morph_phydat(matrix2)\n   rhi(phydat, tree, n)\n\n")
+      msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert_to_amb(matrix)\n   phydat  <- morph_phydat(matrix2)\n   rhi(phydat, tree, n)\n")
       stop(msg)
     }
     data_phyDat <- NULL
@@ -72,9 +72,9 @@ RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL,
   if(length(inv_idx) > 0){
     names <- colnames(mat)
     if(!is.null(names)){
-      stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove_invar()) before running RHI.", paste(names[inv_idx], collapse = ", ")))
+      stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove_invar()) before running rhi.", paste(names[inv_idx], collapse = ", ")))
     } else {
-      stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove_invar()) before running RHI.", paste(inv_idx, collapse = ", ")))
+      stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove_invar()) before running rhi.", paste(inv_idx, collapse = ", ")))
     }
   }
 

@@ -1,4 +1,4 @@
-### 23-Mar-2026 homoplasy.bin function
+### 23-Mar-2026 homoplasy_bin function
 
 # V1.5 (robust indexing)
 
@@ -19,10 +19,10 @@
 #' Groups characters into bins by their per-character RHI: characters with the
 #' same value form a bin if there are enough of them, and the rest are placed
 #' in range bins. The output can be used to partition a matrix by homoplasy,
-#' e.g. with [mrbayes.partition.block()].
+#' e.g. with [mrbayes_partition_block()].
 #'
 #' @param rhi_vals Named numeric vector of per-character RHI, e.g. from
-#'   `RHI(..., per.char = TRUE)`.
+#'   `rhi(..., per.char = TRUE)`.
 #' @param abs_val_min Minimum number of characters sharing one value to form
 #'   an absolute-value bin (e.g. RHI = 0).
 #' @param intervals Numeric vector of break points for range bins.
@@ -35,7 +35,7 @@
 #' @return A list with `bins` (character names or numbers in each bin) and
 #'   `stats` (summary statistics per bin).
 #' @export
-homoplasy.bin <- function(
+homoplasy_bin <- function(
   rhi_vals, 
   abs_val_min = 20, 
   intervals = seq(0, 1, 0.1),

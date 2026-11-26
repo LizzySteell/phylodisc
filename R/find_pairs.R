@@ -21,7 +21,7 @@
 #' @references Brocklehurst N, Panciroli E, Benevento GL, Benson RB (2021)
 #'   Current Biology 31(13).
 #' @export
-find.pairs<-function(morph.dist, groups, pat.dist)
+find_pairs<-function(morph.dist, groups, pat.dist)
 {
 
 	taxes.1<-vector(length=0)

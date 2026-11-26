@@ -13,6 +13,18 @@
 \alias{poly.to.amb}
 \alias{uncert.to.amb}
 \alias{uncert.to.poly}
+\alias{RHI}
+\alias{HER}
+\alias{HSR}
+\alias{anc.discrete}
+\alias{amb.filter}
+\alias{find.pairs}
+\alias{homoplasy.bin}
+\alias{lnorm.params}
+\alias{mean.pairwise.dist}
+\alias{mrbayes.partition.block}
+\alias{phylo.gdist}
+\alias{rate.index}
 \title{Deprecated function names}
 \usage{
 get.states(...)
@@ -36,6 +48,30 @@ poly.to.amb(...)
 uncert.to.amb(...)
 
 uncert.to.poly(...)
+
+RHI(...)
+
+HER(...)
+
+HSR(...)
+
+anc.discrete(...)
+
+amb.filter(...)
+
+find.pairs(...)
+
+homoplasy.bin(...)
+
+lnorm.params(...)
+
+\method{mean}{pairwise.dist}(...)
+
+mrbayes.partition.block(...)
+
+phylo.gdist(...)
+
+rate.index(...)
 }
 \arguments{
 \item{...}{Arguments passed to the new function.}

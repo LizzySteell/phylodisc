@@ -6,7 +6,7 @@
 ### 
 ### FIXED: Now deals with polymorphisms and treats ambiguities as all possible states. Better because it includes more information from the dataset in the ancestral reconstruction.
 ### ER and SYM models supported, ARD model not advisable due to processing times and crashing - potentially fix later. In most cases, ER produces best AICc scores for phylogenetic characters (from experimenting).
-### FIXED: Dealing with optional specific character ordering via specific rate index matrices. Dependent on phylodisc::rate.index function.
+### FIXED: Dealing with optional specific character ordering via specific rate index matrices. Dependent on phylodisc::rate_index function.
 ### NEW: Outputs a list: $anc_states is a matrix of the ancestral states per numbered node (numbering is correct and follows from tip numbers);
 ###		$stats is a dataframe detailing the log likelihood, AIC and AICc scores from the corHMM output per character.
 ### Not supported: invariant characters, uncertainties in curly braces, gaps (which get automatically converted to ambiguities).
@@ -28,24 +28,24 @@
 #' @param tree A `phylo` tree.
 #' @param model Rate model, `"ER"` (equal rates) or `"SYM"`. `"ARD"` is not
 #'   advised.
-#' @param ord Optional vector of ordered characters (see [rate.index()]).
+#' @param ord Optional vector of ordered characters (see [rate_index()]).
 #' @return A list with `anc_states`, a matrix of most likely states per
 #'   internal node (ape node numbering), and `stats`, a data frame of log
 #'   likelihood, AIC and AICc per character.
 #' @export
-anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
+anc_discrete <- function(matrix, tree, model="ER", ord=NULL){
 	
 	# Dependencies
 	if(!requireNamespace("corHMM", quietly = TRUE)) stop("corHMM package required.")
 	if(!exists("get_states", mode = "function")) stop("get_states() not found.")
-	if(!exists("rate.index", mode = "function")) stop("rate.index() not found.")
+	if(!exists("rate_index", mode = "function")) stop("rate_index() not found.")
 
 	# Tell user to convert all uncertainties to polymorphisms or ambiguities in preprocessing.
 	# Tell user to convert all gaps to ambiguities in preprocessing.
 	# Curly-brace uncertainty check
 	if(any(grepl("\\{[^}]+\\}", matrix, perl = TRUE))){
 		msg <- "Uncertainty notation (curly braces) detected in input (e.g. '{01}').\n"
-		msg <- paste0(msg, "Please preprocess your data before calling anc.discrete. Two common options:\n\n")
+		msg <- paste0(msg, "Please preprocess your data before calling anc_discrete. Two common options:\n\n")
 		msg <- paste0(msg, "1) Convert uncertainties to polymorphisms:\n   matrix2 <- uncert_to_poly(matrix)\n\n\n")
 		msg <- paste0(msg, "2) Convert uncertainties to ambiguities '?':\n   matrix2 <- uncert_to_amb(matrix)\n\n")
 		stop(msg)
@@ -60,9 +60,9 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	if(length(inv_idx) > 0){
 		names <- colnames(matrix)
 		if(!is.null(names)){
-			stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc.discrete.", paste(names[inv_idx], collapse = ", ")))
+			stop(sprintf("Invariant characters detected (including one-state + ambiguity). These should be removed: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc_discrete.", paste(names[inv_idx], collapse = ", ")))
 		} else {
-			stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc.discrete.", paste(inv_idx, collapse = ", ")))
+			stop(sprintf("Invariant characters detected at column indices: %s. Please remove invariant characters (e.g. using remove_invar()) before running anc_discrete.", paste(inv_idx, collapse = ", ")))
 		}
 	}
 
@@ -105,7 +105,7 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 		# Check if this character is ordered
 		if (!is.null(ord) && rate_index %in% ord) {
 			# Use custom rate index matrix for ordered characters
-			rate_mat <- rate.index(char[,2], model=model)
+			rate_mat <- rate_index(char[,2], model=model)
 			anc <- corHMM::corHMM(tree, char, model=model, rate.cat=1, rate.mat=rate_mat)
 		} else {
 			# Default behavior

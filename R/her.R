@@ -24,7 +24,7 @@
 #'   Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the Linnean
 #'   Society 204(1):zlaf024.
 #' @export
-HER <- function(data, tree, n, maxit=500, minit=50, k=10){
+her <- function(data, tree, n, maxit=500, minit=50, k=10){
 	
 	# data - matrix of morphological data in phydat format (using morph_phydat)
 	# tree - a phylogenetic tree of class 'phylo'

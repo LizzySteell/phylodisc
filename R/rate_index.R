@@ -20,9 +20,9 @@
 #'   of adjacent states).
 #' @return A square matrix of rate indices, with `NA` for disallowed transitions.
 #' @examples
-#' rate.index(c("0", "1", "2", "1"))
+#' rate_index(c("0", "1", "2", "1"))
 #' @export
-rate.index <- function(char, model="ER"){
+rate_index <- function(char, model="ER"){
 states <- get_states(char)
 names(states) <- c(1:length(states))
 n <- length(states)

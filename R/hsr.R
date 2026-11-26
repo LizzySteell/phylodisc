@@ -25,7 +25,7 @@
 #'   40(1):74-88. Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of
 #'   the Linnean Society 204(1):zlaf024.
 #' @export
-HSR <- function(data, tree, n, modified=TRUE){
+hsr <- function(data, tree, n, modified=TRUE){
 	
 	# data - matrix of morphological data in phydat format (using morph_phydat)
 	# tree - a phylogenetic tree of class 'phylo'

@@ -1,6 +1,6 @@
 # 2026-Sep-09
 
-### amb.filter(): Function to filter taxa and/or characters from a phylogenetic character
+### amb_filter(): Function to filter taxa and/or characters from a phylogenetic character
 ### matrix based on a missing-data ('?') threshold. Can filter taxa (rows), characters
 ### (columns), or both (taxa filtered first, then characters on the resulting matrix).
 ### Excluded taxa/characters and their proportion of missing data are printed and returned.
@@ -20,7 +20,7 @@
 #'   `excluded_chars` (with proportion missing), and `retained_taxa` and
 #'   `retained_chars`.
 #' @export
-amb.filter <- function(matrix, filter = c("taxa", "characters", "both"),
+amb_filter <- function(matrix, filter = c("taxa", "characters", "both"),
                         taxon_threshold = 0.5, char_threshold = 0.5,
                         missing_char = "?", verbose = TRUE){
 

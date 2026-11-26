@@ -1,5 +1,5 @@
 ### 2025-10-28
-### Gower distance matrix for phylogenetic datasets - phylo.gdist() v2.1
+### Gower distance matrix for phylogenetic datasets - phylo_gdist() v2.1
 ### This generates a distance matrix from discrete phylogenetic data where missing data are ignored so they are not considered in the calculations and do not skew the matrix.
 ### StatMatch dependency in this version is no longer necessary due to need for creating custom code to obtain Gower distances when polymorphisms are included.
 ### Notes:
@@ -27,7 +27,7 @@
 #'   or `"empirical"` (sample from the calculated distances).
 #' @return A square distance matrix with taxon names as dimnames.
 #' @export
-phylo.gdist <- function(matrix, ord=NULL, incompat_handling=NULL){
+phylo_gdist <- function(matrix, ord=NULL, incompat_handling=NULL){
 	
 	# If not specified, default to "NaN"
 	if (is.null(incompat_handling)) incompat_handling <- "NaN"
