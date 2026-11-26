@@ -55,6 +55,8 @@ Guillerme T (2018) dispRity: a modular R package for measuring disparity. Method
 
 Meier R, Kores P, Darwin S (1991) Homoplasy slope ratio: a better measurement of observed homoplasy in cladistic analyses. Systematic Zoology 40(1):74-88.
 
+Mendler K, Chen H, Parks DH, Lobb B, Hug LA, Doxey AC (2019) AnnoTree: visualization and exploration of a functionally annotated microbial tree of life. Nucleic Acids Research 47(9):4442-4448. https://doi.org/10.1093/nar/gkz246
+
 Lloyd GT (2016) Estimating morphological diversity and tempo with discrete character-taxon matrices: implementation, challenges, progress, and recommendations. Paleobiology 42(1):11-29.
 
 Nixon KC (1999) The parsimony ratchet, a new method for rapid parsimony analysis. Cladistics 15(4):407-414.

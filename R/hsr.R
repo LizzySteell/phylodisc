@@ -7,7 +7,7 @@
 
 ### Reference: Meier R, Kores P, Darwin S. Homoplasy slope ratio: a better measurement of observed homoplasy in cladistic analyses. Systematic Zoology. 1991 Mar 1;40(1):74-88.
 
-### Note: Mendler et al created a function for this, however formatting of that function was not compatible with others in this package.
+### Note: Mendler et al (2019, Nucleic Acids Research 47(9):4442-4448) implemented HSR independently, however their input data format was not compatible with others in this package.
 
 #' Homoplasy slope ratio (HSR)
 #'
@@ -31,6 +31,12 @@
 #'
 #'   Schliep KP (2011) phangorn: phylogenetic analysis in R. Bioinformatics
 #'   27(4):592-593.
+#'
+#'   See also: Mendler K, Chen H, Parks DH, Lobb B, Hug LA, Doxey AC (2019)
+#'   AnnoTree: visualization and exploration of a functionally annotated
+#'   microbial tree of life. Nucleic Acids Research 47(9):4442-4448. This
+#'   work includes an independent HSR implementation that uses a different
+#'   input data format.
 #' @section AI use:
 #' The function code was written by the package author. The roxygen
 #' documentation and the snake_case name were produced with GitHub Copilot

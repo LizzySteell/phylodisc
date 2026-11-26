@@ -42,4 +42,10 @@ Journal of the Linnean Society 204(1):zlaf024.
 
 Schliep KP (2011) phangorn: phylogenetic analysis in R. Bioinformatics
 27(4):592-593.
+
+See also: Mendler K, Chen H, Parks DH, Lobb B, Hug LA, Doxey AC (2019)
+AnnoTree: visualization and exploration of a functionally annotated
+microbial tree of life. Nucleic Acids Research 47(9):4442-4448. This
+work includes an independent HSR implementation that uses a different
+input data format.
 }
