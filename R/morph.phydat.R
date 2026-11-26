@@ -10,6 +10,16 @@
 # Uses the contrast.matrix() and uncert.to.poly() functions - see functions documentation.
 
 
+#' Make a phyDat object from a morphological matrix
+#'
+#' Wrapper for [phangorn::phyDat()] that converts gaps to missing data,
+#' uncertainties to polymorphisms, and builds the contrast matrix with
+#' [contrast.matrix()].
+#'
+#' @param matrix Character matrix with taxa as rows and characters as columns.
+#'   Polymorphisms and uncertainties in round or curly brackets.
+#' @return A `phyDat` object.
+#' @export
 morph.phydat <- function(matrix){
 	
 	# Matrix of class matrix array which a phylogenetic dataset; taxa as rows, characters as columns.

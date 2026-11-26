@@ -9,6 +9,20 @@
 
 ### Dependencies: remove.invar(), adjust.ord(), cost.matrix() (all from phylodisc); keep.tip() (from ape, only if tree is supplied)
 
+#' Prepare a taxon subset of a matrix in one step
+#'
+#' Subsets a matrix to chosen taxa, removes invariant characters, adjusts the
+#' ordered-character vector, builds a cost matrix (only if ordered characters
+#' are supplied) and optionally prunes a matching tree.
+#'
+#' @param matrix Character matrix with taxa as rows.
+#' @param taxa Character vector of taxon names to keep.
+#' @param ord Optional vector of ordered characters.
+#' @param tree Optional `phylo` tree, pruned to `taxa`.
+#' @return A list with `matrix`, `ord`, `cost`, `tree` (the last three `NULL`
+#'   when not applicable) and `removed` (original indices of removed
+#'   characters).
+#' @export
 prep.subset <- function(matrix, taxa, ord = NULL, tree = NULL){
 
 	# matrix - phylogenetic character matrix (rows = taxa, columns = characters)

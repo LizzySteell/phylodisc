@@ -13,6 +13,16 @@
 
 ########
 
+#' Contrast matrix for a discrete character matrix
+#'
+#' Builds the contrast matrix needed to create a `phyDat` object with
+#' [phangorn::phyDat()]. Gaps are treated as missing data, and uncertainties
+#' and polymorphisms are treated the same.
+#'
+#' @param data Character matrix with taxa as rows and characters as columns.
+#' @return A matrix with one row per possible score and one column per state.
+#' @seealso [morph.phydat()]
+#' @export
 contrast.matrix <- function(data) {
   # Change all '-' values to '?'
   data[data == '-'] <- '?'

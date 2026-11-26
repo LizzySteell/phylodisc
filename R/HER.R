@@ -7,6 +7,23 @@
 
 ### Function to calculate the HER (homplasy excess ratio). Originally the phylogenetic tree aspect was estimated in an inference software (e.g. PAUP) but here it is estimated with 'Phangorn'. 
 
+#' Homoplasy excess ratio (HER)
+#'
+#' Calculates the homoplasy excess ratio of Archie (1989). The expected length
+#' under no phylogenetic signal is estimated by permuting character scores
+#' across taxa and searching for minimum-length trees with
+#' [phangorn::pratchet()].
+#'
+#' @param data A `phyDat` object, e.g. from [morph.phydat()].
+#' @param tree A tree of class `phylo`.
+#' @param n Number of permuted matrices.
+#' @param maxit,minit,k Maximum and minimum iterations, and number of rounds
+#'   without improvement before stopping, passed to the parsimony ratchet.
+#' @return A single numeric value, the HER.
+#' @references Archie JW (1989) Systematic Zoology 38(3):253-269.
+#'   Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the Linnean
+#'   Society 204(1):zlaf024.
+#' @export
 HER <- function(data, tree, n, maxit=500, minit=50, k=10){
 	
 	# data - matrix of morphological data in phydat format (using morph.phydat)

@@ -14,6 +14,19 @@
 
 #######
 
+#' Gower distance matrix for discrete phylogenetic data
+#'
+#' Computes Gower distances (MORD) between taxa, ignoring missing data and
+#' gaps, with support for polymorphisms and ordered characters. Invariant
+#' characters should be removed first ([remove.invar()]).
+#'
+#' @param matrix Character matrix with taxa as rows and characters as columns.
+#' @param ord Optional vector of ordered characters (see [adjust.ord()]).
+#' @param incompat_handling How to treat taxon pairs with no overlapping
+#'   scores: `"NaN"` (default), `"median"` (replace with the median distance)
+#'   or `"empirical"` (sample from the calculated distances).
+#' @return A square distance matrix with taxon names as dimnames.
+#' @export
 phylo.gdist <- function(matrix, ord=NULL, incompat_handling=NULL){
 	
 	# If not specified, default to "NaN"

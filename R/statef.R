@@ -5,6 +5,14 @@
 ### Calculate state frequencies in a matrix
 
 
+#' State frequencies across characters
+#'
+#' Calculates the proportion of characters with two states, three states, and
+#' so on, ignoring missing data and polymorphisms.
+#'
+#' @param data Character matrix with taxa as rows and characters as columns.
+#' @return A named numeric vector of proportions, named by number of states.
+#' @export
 statef <- function(data){
 	#data - matrix array character taxon matrix
 	

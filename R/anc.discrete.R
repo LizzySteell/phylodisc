@@ -14,6 +14,25 @@
 
 ### TO DO: include option to output polymorphic scorings when probability of states is equal or near equal (threshold range of values e.g. 45-55 or 40-60).
 
+#' Ancestral state reconstruction for a discrete character matrix
+#'
+#' Wrapper around `corHMM::corHMM()` that reconstructs marginal ancestral
+#' states for every character. Polymorphisms and ambiguities are treated as
+#' all possible states. Ordered characters can be specified. Requires the
+#' \pkg{corHMM} package, a fully bifurcating tree with branch lengths (no
+#' zero-length branches) and no invariant characters (see [remove.invar()]).
+#' Uncertainties in curly braces must be converted first
+#' ([uncert.to.poly()], [uncert.to.amb()]).
+#'
+#' @param matrix Character matrix with taxa as rows.
+#' @param tree A `phylo` tree.
+#' @param model Rate model, `"ER"` (equal rates) or `"SYM"`. `"ARD"` is not
+#'   advised.
+#' @param ord Optional vector of ordered characters (see [rate.index()]).
+#' @return A list with `anc_states`, a matrix of most likely states per
+#'   internal node (ape node numbering), and `stats`, a data frame of log
+#'   likelihood, AIC and AICc per character.
+#' @export
 anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 	
 	# Dependencies
@@ -87,10 +106,10 @@ anc.discrete <- function(matrix, tree, model="ER", ord=NULL){
 		if (!is.null(ord) && rate_index %in% ord) {
 			# Use custom rate index matrix for ordered characters
 			rate_mat <- rate.index(char[,2], model=model)
-			anc <- corHMM(tree, char, model=model, rate.cat=1, rate.mat=rate_mat)
+			anc <- corHMM::corHMM(tree, char, model=model, rate.cat=1, rate.mat=rate_mat)
 		} else {
 			# Default behavior
-			anc <- corHMM(tree, char, model=model, rate.cat=1)
+			anc <- corHMM::corHMM(tree, char, model=model, rate.cat=1)
 		}
 		liks <- anc$states
 		anc_nodes <- cbind(liks, c(seq(1:dim(liks)[1])))

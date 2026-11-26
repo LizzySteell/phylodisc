@@ -2,6 +2,16 @@
 
 ### poly.to.amb(): A function to change polymorphisms to ambiguities '?' in a matrix
 
+#' Convert polymorphisms to ambiguities
+#'
+#' Replaces polymorphisms (round brackets) and uncertainties (curly brackets)
+#' with `?`.
+#'
+#' @param matrix Character matrix.
+#' @return The matrix with polymorphic scores replaced by `?`.
+#' @examples
+#' poly.to.amb(matrix(c("0", "(01)", "{12}", "1"), ncol = 1))
+#' @export
 poly.to.amb <- function(matrix){
 	
 	# matrix: Phylogenetic character matrix of class matrix array

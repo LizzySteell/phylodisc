@@ -21,6 +21,20 @@
 ### If no invariant characters are found, the unchanged matrix is returned (or a list with an empty 'removed' vector
 ### when return_removed = TRUE), so the function remains compatible for use with apply functions.
 
+#' Remove invariant characters
+#'
+#' Removes characters with no more than one distinct state once missing data
+#' (`?`) is ignored.
+#'
+#' @param matrix Character matrix with taxa as rows and characters as columns.
+#' @param return_removed Logical. If `TRUE`, also return the original indices of
+#'   removed characters, for use with [adjust.ord()].
+#' @return The matrix without invariant characters, or if
+#'   `return_removed = TRUE` a list with `matrix` and `removed`.
+#' @examples
+#' m <- cbind(c("0", "1", "0"), c("1", "1", "?"))
+#' remove.invar(m, return_removed = TRUE)
+#' @export
 remove.invar <- function(matrix, return_removed = FALSE){
 	
 	# matrix - phylogenetic character matrix

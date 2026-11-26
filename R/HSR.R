@@ -9,6 +9,22 @@
 
 ### Note: Mendler et al created a function for this, however formatting of that function was not compatible with others in this package.
 
+#' Homoplasy slope ratio (HSR)
+#'
+#' Calculates the homoplasy slope ratio of Meier et al. (1991), or the
+#' modified version (HSRm) described in Steell et al. (2025).
+#'
+#' @param data A `phyDat` object, e.g. from [morph.phydat()].
+#' @param tree A tree of class `phylo`.
+#' @param n Number of randomised matrices.
+#' @param modified Logical. If `TRUE`, random matrices retain the missing data
+#'   and other non-state scores ("noise") of the empirical matrix; if `FALSE`
+#'   these are excluded.
+#' @return A single numeric value, the HSR.
+#' @references Meier R, Kores P, Darwin S (1991) Systematic Biology
+#'   40(1):74-88. Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of
+#'   the Linnean Society 204(1):zlaf024.
+#' @export
 HSR <- function(data, tree, n, modified=TRUE){
 	
 	# data - matrix of morphological data in phydat format (using morph.phydat)

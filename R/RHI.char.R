@@ -9,15 +9,27 @@
 # - Keeps ordered argument optional (NULL), and uses Sankoff parsimony with cost.matrix() per ordered character
 # - Uses the package-local get.states() and uncert.to.poly() helpers
 
+#' Per-character relative homoplasy index
+#'
+#' Calculates the RHI of each character on a single tree, optionally treating
+#' some characters as ordered (Sankoff parsimony with [cost.matrix()]).
+#'
+#' @param data A `phyDat` object or character matrix.
+#' @param tree A tree of class `phylo`.
+#' @param n Number of randomisations.
+#' @param ordered Optional numeric vector of indices (or character vector of
+#'   column names) of ordered characters.
+#' @return A named numeric vector of RHI values, one per character.
+#' @export
 RHI.char <- function(data, tree, n = 100, ordered = NULL){
 
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")
   if(!requireNamespace("ape", quietly = TRUE)) stop("ape package required.")
 
   # Ensure package-local helpers exist
-  if(!exists("get.states", mode = "function")) stop("get.states() not found — make sure Functions/get.states is sourced or the package is loaded.")
-  if(!exists("uncert.to.poly", mode = "function")) stop("uncert.to.poly() not found — make sure Functions/uncert.to.poly is sourced or the package is loaded.")
-  if(!exists("cost.matrix", mode = "function")) stop("cost.matrix() not found — make sure Functions/cost.matrix is sourced or the package is loaded.")
+  if(!exists("get.states", mode = "function")) stop("get.states() not found - make sure Functions/get.states is sourced or the package is loaded.")
+  if(!exists("uncert.to.poly", mode = "function")) stop("uncert.to.poly() not found - make sure Functions/uncert.to.poly is sourced or the package is loaded.")
+  if(!exists("cost.matrix", mode = "function")) stop("cost.matrix() not found - make sure Functions/cost.matrix is sourced or the package is loaded.")
 
   # Convert to a simple matrix for state extraction (polymorphisms in round brackets)
   data_matrix <- uncert.to.poly(as.matrix(data))

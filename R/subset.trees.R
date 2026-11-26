@@ -3,6 +3,7 @@
 ### SUBSET TREES FUNCTION
 
 ### Subsetting trees - randomly samples n tips from a given topology
+#' @noRd
 subset.trees <- function(n, tree, ntaxa) {
 	#n - number of subsets to be made
 	#tree - tree (object of class phylo) to be subsetted

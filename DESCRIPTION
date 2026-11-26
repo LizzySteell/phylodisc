@@ -11,7 +11,9 @@ Description: Tools for analysing discrete (typically morphological) character
     and helpers for building 'phyDat' objects and 'MrBayes' partition blocks.
 License: AGPL (>= 3)
 Encoding: UTF-8
-Imports: ape, phangorn, stats
-Suggests: corHMM
+Imports: ape, phangorn, stats, graphics
+Suggests: corHMM, geiger, fitdistrplus, TreeTools
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
 URL: https://github.com/LizzySteell/phylodisc
 BugReports: https://github.com/LizzySteell/phylodisc/issues

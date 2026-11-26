@@ -9,6 +9,19 @@
 ###        The output is matrix with rows and columns representing states (renumbered to follow formatting of corHMM).
 ###        This matrix does NOT contain or estimate the actual rate of change between character states within a character. It just specifies what is allowed in downstream calls (i.e., indicates what parameters are to be estimated in the corHMM analysis).
 
+#' Rate index matrix for an ordered multistate character
+#'
+#' Builds the rate index matrix used by `corHMM::corHMM()` to specify which
+#' transitions are allowed in an ordered character: only changes between
+#' adjacent states. It does not estimate rates.
+#'
+#' @param char A single character (one column of a matrix).
+#' @param model `"ER"` (one shared rate) or `"SYM"` (a symmetric rate per pair
+#'   of adjacent states).
+#' @return A square matrix of rate indices, with `NA` for disallowed transitions.
+#' @examples
+#' rate.index(c("0", "1", "2", "1"))
+#' @export
 rate.index <- function(char, model="ER"){
 states <- get.states(char)
 names(states) <- c(1:length(states))

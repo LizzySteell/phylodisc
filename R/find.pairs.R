@@ -8,6 +8,19 @@
 ###            See also: Brocklehurst N, Ford DP, Benson RB. Early origins of divergent patterns of morphological evolution on the mammal and reptile stem-lineages. Systematic Biology. 2022 Sep 1;71(5):1195-209.
 ###            Brocklehurst N, Benson RJ. Multiple paths to morphological diversification during the origin of amniotes. Nature Ecology & Evolution. 2021 Sep;5(9):1243-9.              
 
+#' Assemble taxon pairs from morphological and patristic distances
+#'
+#' Lists all taxon pairs with their group membership, morphological distance
+#' and patristic distance, for analyses of constraint through character state
+#' exhaustion. Written by Neil Brocklehurst and reproduced with permission.
+#'
+#' @param morph.dist Matrix of morphological dissimilarities between taxa.
+#' @param groups Two-column matrix or data frame: taxon names, then groups.
+#' @param pat.dist Matrix of patristic distances between taxa.
+#' @return A data frame with one row per taxon pair.
+#' @references Brocklehurst N, Panciroli E, Benevento GL, Benson RB (2021)
+#'   Current Biology 31(13).
+#' @export
 find.pairs<-function(morph.dist, groups, pat.dist)
 {
 

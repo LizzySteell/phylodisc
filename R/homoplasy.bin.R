@@ -14,6 +14,27 @@
 # excluded: integer vector of character indices to exclude (optional); this is for excluded invariant characters that were removed in preprocessing from remove.invar function. Must be reintroduced if you want accurate character lists for each partition.
 # Returns: list of character names for each bin (unique value bins, range bins, and "NA" bin for excluded/missing); box plot for distributions of bins; variance statistics.
 
+#' Bin characters by homoplasy level
+#'
+#' Groups characters into bins by their per-character RHI: characters with the
+#' same value form a bin if there are enough of them, and the rest are placed
+#' in range bins. The output can be used to partition a matrix by homoplasy,
+#' e.g. with [mrbayes.partition.block()].
+#'
+#' @param rhi_vals Named numeric vector of per-character RHI, e.g. from
+#'   `RHI(..., per.char = TRUE)`.
+#' @param abs_val_min Minimum number of characters sharing one value to form
+#'   an absolute-value bin (e.g. RHI = 0).
+#' @param intervals Numeric vector of break points for range bins.
+#' @param round_digits Decimal places used when grouping equal values.
+#' @param min_bin_size Minimum bin size; smaller bins are merged into the
+#'   nearest non-absolute bin.
+#' @param excluded Integer vector of character indices removed beforehand (e.g.
+#'   by [remove.invar()]), reinstated so that numbering is correct.
+#' @param plot Logical. Plot the RHI distribution within bins.
+#' @return A list with `bins` (character names or numbers in each bin) and
+#'   `stats` (summary statistics per bin).
+#' @export
 homoplasy.bin <- function(
   rhi_vals, 
   abs_val_min = 20, 

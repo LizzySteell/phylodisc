@@ -5,6 +5,21 @@
 ### (columns), or both (taxa filtered first, then characters on the resulting matrix).
 ### Excluded taxa/characters and their proportion of missing data are printed and returned.
 
+#' Filter taxa and/or characters by proportion of missing data
+#'
+#' Removes taxa (rows) and/or characters (columns) whose proportion of missing
+#' data exceeds a threshold. When `filter = "both"`, taxa are filtered first.
+#'
+#' @param matrix Character matrix with taxon names as row names.
+#' @param filter One of `"taxa"`, `"characters"` or `"both"`.
+#' @param taxon_threshold,char_threshold Maximum proportion of missing data
+#'   allowed per taxon / per character.
+#' @param missing_char Symbol for missing data.
+#' @param verbose Logical. Print filtering summaries.
+#' @return A list with the filtered `matrix`, data frames `excluded_taxa` and
+#'   `excluded_chars` (with proportion missing), and `retained_taxa` and
+#'   `retained_chars`.
+#' @export
 amb.filter <- function(matrix, filter = c("taxa", "characters", "both"),
                         taxon_threshold = 0.5, char_threshold = 0.5,
                         missing_char = "?", verbose = TRUE){

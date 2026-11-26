@@ -11,6 +11,17 @@
 
 #RHI function including ordered characters
 
+#' RHI across a distribution of trees
+#'
+#' Calculates the RHI for each tree in a `multiPhylo` object and summarises the
+#' distribution. See [RHI()], which can also take multiple trees.
+#'
+#' @param data A `phyDat` object from [morph.phydat()].
+#' @param trees A `multiPhylo` object.
+#' @param n Number of randomisations.
+#' @param ord,cost Currently not passed on to [RHI()].
+#' @return Median, 5% and 95% quantiles of RHI and the median tree length.
+#' @export
 RHI.multi <- function(data, trees, n, ord=NULL, cost=NULL){ 
 	
 	### 

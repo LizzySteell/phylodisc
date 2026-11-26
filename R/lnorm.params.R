@@ -14,9 +14,21 @@
 
 ### Notes: at present, function cannot handle polymorphic scorings or zero-length branches.
 
+#' Log-normal parameters of character transition rates
+#'
+#' Fits an equal-rates model to each character and estimates the mean and
+#' standard deviation of the log-normal distribution of transition rates, for
+#' use in whole-matrix simulation with `dispRity::sim.morpho()`. Requires the
+#' \pkg{geiger}, \pkg{fitdistrplus} and \pkg{TreeTools} packages. Polymorphic
+#' scores and zero-length branches are not supported.
+#'
+#' @param matrix Character matrix; ambiguities (`?`) are excluded per character.
+#' @param tree A fully bifurcating `phylo` tree with branch lengths.
+#' @return A list with `mean_log` and `sd_log`. Also plots the fit.
+#' @export
 lnorm.params <- function(matrix, tree){
 
-tips <- TipLabels(tree)
+tips <- TreeTools::TipLabels(tree)
 data <- matrix
 
 #
@@ -31,12 +43,12 @@ for(i in 1:ncol(data)){
 
 rates <- c()
 for(j in 1:length(omit_amb)){
-	rates[[j]] <- fitDiscrete(tree, omit_amb[[j]], model="ER") 
+	rates[[j]] <- geiger::fitDiscrete(tree, omit_amb[[j]], model="ER") 
 }
 
 Qmatrices <- list()
 for(i in 1:length(rates)){
-	Qmatrices[[i]] <- as.Qmatrix(rates[[i]])
+	Qmatrices[[i]] <- geiger::as.Qmatrix(rates[[i]])
 }
 
 #Make a vector of the transition rates for one state change in each character
@@ -45,7 +57,7 @@ for(i in 1:length(Qmatrices)){
 	Qrates[[i]] <- Qmatrices[[i]][2]
 	}
 
-logn <- fitdist(Qrates, "lnorm")
+logn <- fitdistrplus::fitdist(Qrates, "lnorm")
 plot(logn)
 summary(logn) #meanlog -4.811394 sdlog    1.055575
 

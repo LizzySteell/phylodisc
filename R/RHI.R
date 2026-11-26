@@ -9,6 +9,30 @@
 ### Note: do not supply a cost matrix object if per.char = TRUE, default cost matrix is created for each character within function call. 
 ##### RHI: unified function (optimized, robust invariant detection, prints RHI values)
 #
+#' Relative homoplasy index (RHI)
+#'
+#' Calculates the relative homoplasy index of a discrete character matrix on a
+#' tree, or on a set of trees. Supports polymorphisms, ambiguities and ordered
+#' characters, and can return per-character values.
+#'
+#' @param data A `phyDat` object (see [morph.phydat()]) or a character matrix
+#'   with taxa as rows and characters as columns.
+#' @param tree A `phylo` tree, or a `multiPhylo` object / list of trees (in which
+#'   case trees are detected automatically).
+#' @param n Number of randomisations.
+#' @param trees Logical. Set to `TRUE` if `tree` is a list of trees.
+#' @param ordered Optional numeric vector of indices (or character vector of
+#'   column names) of ordered characters.
+#' @param cost Optional cost matrix for ordered characters (see
+#'   [cost.matrix()]). Do not supply when `per.char = TRUE`.
+#' @param per.char Logical. If `TRUE`, return RHI for each character.
+#' @return For a single tree, a named numeric vector containing the 5% quantile,
+#'   central RHI, 95% quantile, tree length and minimum length. With
+#'   `per.char = TRUE`, a named vector of per-character RHI. For multiple trees,
+#'   a list summarising the distribution across trees.
+#' @references Steell EM, Hsiang AY, Field DJ (2025) Zoological Journal of the
+#'   Linnean Society 204(1):zlaf024.
+#' @export
 RHI <- function(data, tree, n = 100, trees = FALSE, ordered = NULL, cost = NULL, per.char = FALSE){
   # Dependencies
   if(!requireNamespace("phangorn", quietly = TRUE)) stop("phangorn package required.")

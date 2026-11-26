@@ -11,6 +11,16 @@
 # Output:
 # - matrix (character) with curly-brace uncertainties replaced by '?'
 #
+#' Convert uncertainties to ambiguities
+#'
+#' Replaces uncertainties in curly braces (e.g. `{01}`) with `?`, leaving
+#' polymorphisms in round brackets unchanged.
+#'
+#' @param mat Matrix or data frame of character scores.
+#' @return A character matrix.
+#' @examples
+#' uncert.to.amb(matrix(c("0", "{01}", "(12)"), ncol = 1))
+#' @export
 uncert.to.amb <- function(mat){
   # Accept data.frame or matrix
   if (is.data.frame(mat)) {

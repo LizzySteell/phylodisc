@@ -2,16 +2,20 @@
 
 # V1.0 mrbayes.partition.block function
 
-#' Write MrBayes partition block from homoplasy.bin output
-#' This code is a wedding gift to my dear friend Juan Benito
-#' @param homoplasy_bins Output from homoplasy.bin()
-#' @param partition_name Name for the partition scheme (default "homoplasy")
-#' @return Character string with MrBayes partition block
+#' Write a MrBayes partition block from homoplasy bins
+#'
+#' Prints `charset`, `partition` and `set partition` commands that can be
+#' pasted into a MrBayes block. This code is a wedding gift to my dear friend
+#' Juan Benito.
+#'
+#' @param homoplasy_bins Output from [homoplasy.bin()].
+#' @param partition_name Name for the partition scheme.
+#' @return Called for its printed output (via `cat()`); returns `NULL`
+#'   invisibly.
 #' @examples
-#' out <- homoplasy.bin(...)
-#' write_mrbayes_partition(out)
-#' Ready to copy and paste into MrBayes code block
-
+#' bins <- list(bins = list(low = c(1, 2, 3), high = c(4, 5)))
+#' mrbayes.partition.block(bins)
+#' @export
 mrbayes.partition.block <- function(homoplasy_bins, partition_name = "homoplasy") {
   bins <- homoplasy_bins$bins
   bin_names <- names(bins)
