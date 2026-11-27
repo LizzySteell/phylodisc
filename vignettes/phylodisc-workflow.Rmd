@@ -55,7 +55,6 @@ two comparable clades). -->
 
 ```{r a-homoplasy}
 # rhi(phy_a, trees_a[[1]])
-# rhi(phy_a, trees_a)
 # her(phy_a, trees_a[[1]], n = 100)
 # hsr(phy_a, trees_a[[1]], n = 100)
 ```
@@ -113,6 +112,15 @@ two comparable clades). -->
 # rhi_pc <- rhi(phy_b, tree_b, per.char = TRUE)
 # bins <- homoplasy_bin(rhi_pc, ...)
 # mrbayes_partition_block(bins)
+```
+
+## RHI across a posterior sample
+
+```{r b-posterior}
+# Run MrBayes externally with the partition block, then read the posterior
+# trees (e.g. ape::read.nexus()) and take a random subset (burn-in removed).
+# post_trees <- sample(posterior, 100)
+# rhi(phy_b, post_trees)  # multiPhylo: summarises RHI across the sample
 ```
 
 ## Constraint: pairs of taxa
