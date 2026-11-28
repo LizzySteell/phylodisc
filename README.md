@@ -7,7 +7,7 @@ phylodisc provides tools for analysing discrete character data (typically morpho
 
 ```r
 # install.packages("remotes")
-remotes::install_github("LizzySteell/phylodisc@r-package")
+remotes::install_github("LizzySteell/phylodisc")
 library(phylodisc)
 ```
 
