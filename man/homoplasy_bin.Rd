@@ -21,7 +21,9 @@ homoplasy_bin(
 \item{abs_val_min}{Minimum number of characters sharing one value to form
 an absolute-value bin (e.g. RHI = 0).}
 
-\item{intervals}{Numeric vector of break points for range bins.}
+\item{intervals}{Numeric vector of break points for range bins. Values
+outside the range of the breaks are placed in the nearest (first or last)
+range bin, so every character is binned.}
 
 \item{round_digits}{Decimal places used when grouping equal values.}
 

@@ -25,7 +25,9 @@
 #'   `rhi(..., per.char = TRUE)`.
 #' @param abs_val_min Minimum number of characters sharing one value to form
 #'   an absolute-value bin (e.g. RHI = 0).
-#' @param intervals Numeric vector of break points for range bins.
+#' @param intervals Numeric vector of break points for range bins. Values
+#'   outside the range of the breaks are placed in the nearest (first or last)
+#'   range bin, so every character is binned.
 #' @param round_digits Decimal places used when grouping equal values.
 #' @param min_bin_size Minimum bin size; smaller bins are merged into the
 #'   nearest non-absolute bin.
@@ -99,7 +101,10 @@ homoplasy_bin <- function(
   remaining_vals <- rhi_vals[remaining_idx]
 
   if(length(remaining_vals) > 0){
-    range_bins <- cut(remaining_vals, breaks = intervals, include.lowest = TRUE, right = FALSE)
+    # Values outside the intervals would be dropped by cut(); clamp them so they
+    # fall in the nearest (first or last) range bin.
+    clamped_vals <- pmin(pmax(remaining_vals, min(intervals)), max(intervals))
+    range_bins <- cut(clamped_vals, breaks = intervals, include.lowest = TRUE, right = FALSE)
     for(lbl in levels(range_bins)){
       idx2 <- which(range_bins == lbl)
       if(length(idx2) > 0){
@@ -152,6 +157,9 @@ homoplasy_bin <- function(
     keep <- sapply(bin_list, length) > 0 | names(bin_list) == "NA"
     bin_list <- bin_list[keep]
   }
+
+  # Every character must be in exactly one bin
+  if(sum(lengths(bin_list)) != N) stop("Internal error: bins do not sum to the number of characters.")
 
   # --- Safety check: warn if an abs_val bin contains values not matching its label ---
   for(bn in names(bin_list)) {
